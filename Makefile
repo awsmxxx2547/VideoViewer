@@ -6,11 +6,11 @@ CXX := $(CXX)
 AR := $(AR)
 RANLIB := $(RANLIB)
 WINDRES := $(WINDRES)
-CFLAGS := -Wall -Iinclude -Iusr/include/x86_64-linux-gnu -I/usr/include
+CFLAGS := -Wall -Iinclude -I/usr/include/x86_64-linux-gnu -I/usr/include
 LDFLAGS := -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
 
 # Source files
-SOURCES = src/*
+SOURCES = src/main.c src/sdl.c src/video.c
 
 # Executable name
 EXECUTABLE = video_viewer.exe
