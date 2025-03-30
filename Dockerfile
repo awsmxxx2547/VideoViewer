@@ -10,7 +10,7 @@ RUN apt-get install -y build-essential make git wget unzip
 RUN apt-get install -y mingw-w64
 
 ## Install FFmpeg and its development headers (adjust version as needed)
-RUN apt-get install -y libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample 
+RUN apt-get install -y libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev
 
 # Install SDL2
 RUN apt-get install -y libsdl2-dev
