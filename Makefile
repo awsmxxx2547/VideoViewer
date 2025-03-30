@@ -6,7 +6,7 @@ CXX := $(CXX)
 AR := $(AR)
 RANLIB := $(RANLIB)
 WINDRES := $(WINDRES)
-CFLAGS := -Wall -Iinclude -I/usr/include/ffmpeg -I/usr/include/SDL2
+CFLAGS := -Wall -Iinclude -I/usr/include/
 LDFLAGS := -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
 
 # Source files
