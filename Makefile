@@ -6,7 +6,7 @@ CXX := $(CXX)
 AR := $(AR)
 RANLIB := $(RANLIB)
 WINDRES := $(WINDRES)
-CFLAGS := -Wall -Iinclude -I/usr/include/x86_64-linux-gnu -I/usr/include
+CFLAGS := -Wall -Iinclude -I/usr/include/x86_64-linux-gnu -I/usr/include/SDL2
 LDFLAGS := -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
 
 
