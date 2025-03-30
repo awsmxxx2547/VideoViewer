@@ -1,0 +1,20 @@
+#include "../../include/test_utils.h"
+
+typedef struct 
+{};
+
+
+
+void test()
+{
+    TEST_START("Playback Integration");
+    ASSERT(ret == 0, "Video Initialization");
+    ASSERT(ret == 0, "SDL Initialization");
+
+    ASSERT(pkt != NULL, "Packet allocation");
+    ASSERT(frame != NULL, "Frame allocation");
+
+    ASSERT(frames_processed > 0, "At least one frame processed");
+
+    TEST_END();
+}
