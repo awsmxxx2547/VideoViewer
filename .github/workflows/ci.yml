@@ -28,7 +28,7 @@ jobs:
         run: cp video_viewer.exe windows_binaries/video_viewer.exe
       
       - name: Upload Windows Executable
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows_executable
           path: windows_binaries
