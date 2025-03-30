@@ -26,5 +26,6 @@ ENV AR="x86_64-w64-mingw32-ar"
 ENV RANLIB="x86_64-w64-mingw32-ranlib"
 ENV WINDRES="x86_64-w64-mingw32-windres"
 
+
 # Build the image.
 # docker build -t my-c-project .
