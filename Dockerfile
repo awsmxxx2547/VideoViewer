@@ -20,11 +20,11 @@ WORKDIR /app
 COPY . /app
 
 # Set up environment variables for cross-compilation.
-ENV CC      = "x86_64-w64-mingw32-gcc"
-ENV CXX     = "x86_64-w64-mingw32-g++"
-ENV AR      = "x86_64-w64-mingw32-ar"
-ENV RANLIB  = "x86_64-w64-mingw32-ranlib"
-ENV WINDRES = "x86_64-w64-mingw32-windres"
+ENV CC="x86_64-w64-mingw32-gcc"
+ENV CXX="x86_64-w64-mingw32-g++"
+ENV AR="x86_64-w64-mingw32-ar"
+ENV RANLIB="x86_64-w64-mingw32-ranlib"
+ENV WINDRES="x86_64-w64-mingw32-windres"
 
 # Build the image.
 # docker build -t my-c-project .
