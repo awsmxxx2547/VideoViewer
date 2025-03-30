@@ -1,0 +1,30 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "master", "ci" ]
+  pull_request:
+    branches: [ "master", "ci" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: docker build -t my-c-project .
+
+      - name: Run Docker Container and Build
+        run: docker run --rm -v $(pwd):/app my-c-project make
+
+      - name: Upload Windows Executable
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p windows_binaries
+          cp video_viewer.exe windows_binaries/video_viewer.exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows_executable
+          path: windows_binaries
