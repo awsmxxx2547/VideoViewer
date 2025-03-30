@@ -1,0 +1,17 @@
+name: Run UNIT Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y ffmpeg make gcc
+
+      - name: Run UNIT tests
+        run: make test-unit
