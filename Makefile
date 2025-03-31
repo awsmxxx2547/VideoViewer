@@ -19,19 +19,23 @@ BIN_DIR 					:= $(BUILD_DIR)/bin
 OBJ_DIR 					:= $(BUILD_DIR)/obj
 
 SOURCES 					:= $(wildcard $(SRC_DIR)/*.c)
-OBJECTS 					:= $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
+OBJECTS 					:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
+# ========================
+# Build Targets
+# ========================
+.PHONY: all clean install uninstall help
 
 all: directories $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	@echo "Starting build process..."
-	@$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	@$(CC) $^ -o $@ $(LDFLAGS)
 	@echo "Build successful!"
 
-$(OBJ_DIR)/$.o: $(SRC_DIR)/%.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "Compiling $<..."
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # ========================
 # Development Utilities
