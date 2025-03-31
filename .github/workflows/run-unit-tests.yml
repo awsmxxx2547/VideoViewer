@@ -14,7 +14,7 @@ jobs:
         run: docker build -t my-c-project .
 
       - name: Run Docker Container and Build
-      - run: docker run --rm -it \
+        run: docker run --rm -v \
               --device /dev/snd \
               -e ALSA_CARD=0 \
               -v /usr/share/alsa:/usr/share/alsa \
