@@ -18,15 +18,15 @@ jobs:
 
       - name: Run Docker Container and Build
         run: docker run --rm -v $(pwd):/app my-c-project make
-      
+
       - name: Create Windows Binaries Directory
         if: runner.os == 'Linux'
         run: mkdir -p windows_binaries
-      
+
       - name: Copy Windows Executable
         if: runner.os == 'Linux'
         run: cp video_viewer.exe windows_binaries/video_viewer.exe
-      
+
       - name: Upload Windows Executable
         uses: actions/upload-artifact@v4
         with:
