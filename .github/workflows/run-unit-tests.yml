@@ -20,6 +20,7 @@ jobs:
           -v /usr/share/alsa:/usr/share/alsa \
           -v /etc/asound.conf:/etc/asound.conf \
           -v "${{ github.workspace }}:/app" \
+                                           -w /app \
                                            my-c-project make
 
       - name: Run UNIT tests
