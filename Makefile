@@ -64,6 +64,7 @@ directories:
 clean:
 	@echo "Cleaning build artifacts..."
 	@rm -rf $(BIN_DIR) $(OBJ_DIR)
+	@rm -rf $(TEST_SAMPLES_DIR)
 	@echo "Project cleaned!"
 
 help:
