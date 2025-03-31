@@ -17,9 +17,27 @@ SRC_DIR 					:= src
 BUILD_DIR 					:= build
 BIN_DIR 					:= $(BUILD_DIR)/bin
 OBJ_DIR 					:= $(BUILD_DIR)/obj
+SCRIPTS_DIR 				:= scripts
 
 SOURCES 					:= $(wildcard $(SRC_DIR)/*.c)
 OBJECTS 					:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
+
+
+# ========================
+# Test Paths
+# ========================
+TEST_DIR 					:= tests
+UNIT_TEST_DIR 				:= $(TEST_DIR)/unit
+INTEGRATION_TEST_DIR 		:= $(TEST_DIR)/integration
+TEST_SAMPLES_DIR 			:= $(INTEGRATION_TEST_DIR)/test_samples
+COVERAGE_REPORTS_DIR 		:= coverage_reports
+
+UNIT_TEST_SOURCES 			:= $(wildcard $(UNIT_TEST_DIR)/*.c)
+INTEGRATION_TEST_SOURCES 	:= $(wildcard $(INTEGRATION_TEST_DIR)/*.c)
+
+TEST_BIN 					:= $(BIN_DIR)/tests
+UNIT_TEST_OBJECTS 			:= $(patsubst $(UNIT_TEST_DIR)/%.c,$(OBJ_DIR)/unit/%.o,$(UNIT_TEST_SOURCES))
+INTEGRATION_TEST_OBJECTS 	:= $(patsubst $(INTEGRATION_TEST_DIR)/%.c,$(OBJ_DIR)/integration/%.o,$(INTEGRATION_TEST_SOURCES))
 
 # ========================
 # Build Targets
@@ -74,3 +92,44 @@ uninstall:
 	else \
 		echo "⚠️  video_viewer not found in $(INSTALL_DIR)"; \
 	fi
+
+# ========================
+# Test Configuration
+# ========================
+.PHONY: test t-unit t-integration t-coverage t-samples
+
+test: directories t-samples t-unit-conf t-integration-conf
+
+t-unit: t-samples t-unit-conf
+
+t-unit-conf: $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(UNIT_TEST_OBJECTS)
+	@echo "Linking unit tests..."
+	@$(CC) $^ -o $(TEST_BIN) $(LDFLAGS)
+	@echo "Running unit tests..."
+	@./$(TEST_BIN) --unit
+
+t-integration-conf: $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(INTEGRATION_TEST_OBJECTS)
+	@echo "Linking integration tests..."
+	@$(CC) $^ -o $(TEST_BIN) $(LDFLAGS)
+	@echo "Running integration tests..."
+	@./$(TEST_BIN) --integration
+
+t-samples:
+	@$(SCRIPTS_DIR)/download_test_samples.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

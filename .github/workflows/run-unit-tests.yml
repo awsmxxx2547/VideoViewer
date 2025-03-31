@@ -14,4 +14,4 @@ jobs:
         run: sudo apt update && sudo apt install -y ffmpeg make gcc
 
       - name: Run UNIT tests
-        run: make test-unit
+        run: make t-unit
