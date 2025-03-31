@@ -19,7 +19,7 @@ jobs:
               -e ALSA_CARD=0 \
               -v /usr/share/alsa:/usr/share/alsa \
               -v /etc/asound.conf:/etc/asound.conf \
-              ${{ github.workspace }}:/app \
+              -v ${{ github.workspace }}:/app \
               my-c-project make
 
       - name: Run UNIT tests
