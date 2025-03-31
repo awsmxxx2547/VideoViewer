@@ -16,5 +16,21 @@ jobs:
       - name: Run Docker Container and Build
         run: docker run --rm -v $(pwd):/app my-c-project make
 
+      - name: Install ALSA Utilities
+        run: sudo apt-get update && sudo apt-get install -y alsa-utils
+
+      - name: List ALSA Devices
+        run: aplay -l  # <--- VERY IMPORTANT
+
+      - name: Test aplay
+        run: |
+          wget https://www.kozco.com/tech/piano/pianoC.wav -O test.wav
+          aplay test.wav
+        run: aplay -l 
+
+      - name: Echo Environment Variables
+        run: |
+          echo "AUDIODEV: $AUDIODEV"
+
       - name: Run UNIT tests
         run: make t-unit
