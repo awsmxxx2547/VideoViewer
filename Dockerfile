@@ -26,7 +26,6 @@ RUN mkdir /tmp/ffmpeg_build && cd /tmp/ffmpeg_build && \
     --enable-shared \
     --disable-static \
     --disable-doc \
-    --enable-memalign-hack \
     --extra-cflags="-I/usr/x86_64-w64-mingw32/include" \
     --extra-ldflags="-L/usr/x86_64-w64-mingw32/lib" && \
     make -j$(nproc) && \
@@ -40,6 +39,3 @@ ENV RANLIB="x86_64-w64-mingw32-ranlib"
 ENV WINDRES="x86_64-w64-mingw32-windres"
 
 RUN ls /usr/x86_64-w64-mingw32/lib
-RUN ls -l /usr/x86_64-w64-mingw32/include/libavformat/avformat.h
-
-
