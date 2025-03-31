@@ -26,7 +26,6 @@ jobs:
         run: |
           wget https://www.kozco.com/tech/piano/pianoC.wav -O test.wav
           aplay test.wav
-        run: aplay -l 
 
       - name: Echo Environment Variables
         run: |
