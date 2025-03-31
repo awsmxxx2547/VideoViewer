@@ -16,7 +16,6 @@ jobs:
       - name: Run Docker Container and Build
         run: |
           docker run --rm \
-          --device /dev/snd \
           -e ALSA_CARD=0 \
           -v /usr/share/alsa:/usr/share/alsa \
           -v /etc/asound.conf:/etc/asound.conf \
