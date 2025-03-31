@@ -9,6 +9,7 @@ LDFLAGS 					:= -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
 
 INSTALL_DIR 				:= /usr/local/bin
 TARGET 						:= build/bin/$(APP_NAME)
+PLATFORM 					:= $(uname -s)
 
 # ========================
 # File Paths
@@ -22,11 +23,11 @@ SCRIPTS_DIR 				:= scripts
 SOURCES 					:= $(wildcard $(SRC_DIR)/*.c)
 OBJECTS 					:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
-
 # ========================
 # Test Paths
 # ========================
 TEST_DIR 					:= tests
+TEST_BIN 					:= $(BIN_DIR)/tests
 UNIT_TEST_DIR 				:= $(TEST_DIR)/unit
 INTEGRATION_TEST_DIR 		:= $(TEST_DIR)/integration
 TEST_SAMPLES_DIR 			:= $(INTEGRATION_TEST_DIR)/test_samples
@@ -35,7 +36,6 @@ COVERAGE_REPORTS_DIR 		:= coverage_reports
 UNIT_TEST_SOURCES 			:= $(wildcard $(UNIT_TEST_DIR)/*.c)
 INTEGRATION_TEST_SOURCES 	:= $(wildcard $(INTEGRATION_TEST_DIR)/*.c)
 
-TEST_BIN 					:= $(BIN_DIR)/tests
 UNIT_TEST_OBJECTS 			:= $(patsubst $(UNIT_TEST_DIR)/%.c,$(OBJ_DIR)/unit/%.o,$(UNIT_TEST_SOURCES))
 INTEGRATION_TEST_OBJECTS 	:= $(patsubst $(INTEGRATION_TEST_DIR)/%.c,$(OBJ_DIR)/integration/%.o,$(INTEGRATION_TEST_SOURCES))
 
@@ -86,13 +86,7 @@ install: all $(TARGET)
 	@echo "Installation complete! Run with: video_viewer"
 
 uninstall:
-	@echo "Uninstalling from $(INSTALL_DIR)..."
-	@if [ -f "$(INSTALL_DIR)/video_viewer" ]; then \
-		sudo rm -f "$(INSTALL_DIR)/video_viewer" && \
-		echo "✅ Removed $(INSTALL_DIR)/video_viewer"; \
-	else \
-		echo "⚠️  video_viewer not found in $(INSTALL_DIR)"; \
-	fi
+	@$(SCRIPTS_DIR)/uninstall
 
 # ========================
 # Test Configuration
@@ -128,12 +122,12 @@ $(OBJ_DIR)/integration/%.o: $(INTEGRATION_TEST_DIR)/%.c
 	@echo "🛠️  Building integration test $<..."
 	@$(CC) $(CFLAGS) -I$(TEST_DIR) -c $< -o $@
 
-
-
-
-
-
-
+t-coverage: CFLAGS += --coverage
+t-coverage: LDFLAGS += --coverage
+t-coverage: clean test
+	@echo "📊 Generating coverage report..."
+	@gcovr --root . --exclude tests/ --html --html-details -o $(COVERAGE_REPORTS_DIR)/coverage_report.html
+	@echo "📄 Coverage report generated: coverage_report.html"
 
 
 

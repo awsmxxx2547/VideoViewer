@@ -1,7 +1,6 @@
 #include "../../include/test_utils.h"
 #include "../../include/video.h"
 #include "../../include/sdl.h"
-#include "../../include/test_playback.h"
 
 int test_playback(const char *filename) {
     TEST_START("Playback Integration");
@@ -70,11 +69,6 @@ int test_playback(const char *filename) {
 
     TEST_END();
     return result;
-}
-
-void PlaybackTest(Playback playback)
-{
-    
 }
 
 int main() {

@@ -14,8 +14,7 @@ A high-performance video playback tool built with SDL2 and FFmpeg, supporting mu
 Download AppImage from [Releases](https://github.com/awsmxxx2547/VideoViewer/releases)
 and run:
 ```bash
-chmod +x VideoViewer-*.AppImage
-./VideoViewer-*.AppImage
+./install.sh
 ```
 
 ## Usage

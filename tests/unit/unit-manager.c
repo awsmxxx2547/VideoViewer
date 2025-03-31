@@ -1,5 +1,5 @@
-#include "test_audio.h"
-#include "test_decoder.h"
+#include "../../include/test_audio.h"
+#include "../../include/test_decoder.h"
 
 int main()
 {
