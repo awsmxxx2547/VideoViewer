@@ -15,5 +15,3 @@ RUN apt-get install -y libsdl2-dev
 WORKDIR /app
 
 COPY . /app
-
-RUN make
