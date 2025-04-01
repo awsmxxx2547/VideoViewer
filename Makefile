@@ -42,7 +42,7 @@ INTEGRATION_TEST_OBJECTS 	:= $(patsubst $(INTEGRATION_TEST_DIR)/%.c,$(OBJ_DIR)/i
 # ========================
 # Build Targets
 # ========================
-.PHONY: all clean install uninstall help
+.PHONY: all clean install uninstall help test
 
 all: directories $(TARGET) $(OBJ_DIR)/unit/%.o
 
@@ -115,7 +115,7 @@ t-samples:
 $(OBJ_DIR)/unit/%.o: $(UNIT_TEST_DIR)/%.c
 	@mkdir -p $(@D)
 	@echo "🛠️  Building unit test $<..."
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -I$(TEST_DIR) -c $< -o $@
 
 $(OBJ_DIR)/integration/%.o: $(INTEGRATION_TEST_DIR)/%.c
 	@mkdir -p $(@D)
