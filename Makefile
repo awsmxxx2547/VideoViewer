@@ -113,7 +113,7 @@ t-samples:
 	@$(SCRIPTS_DIR)/download_test_samples.sh
 
 $(OBJ_DIR)/unit/%.o: $(UNIT_TEST_DIR)/%.c
-	@mkdir -p $(@D)
+	@sudo mkdir -p $(@D)
 	@echo "🛠️  Building unit test $<..."
 	@$(CC) $(CFLAGS) -I$(TEST_DIR) -c $< -o $@
 
