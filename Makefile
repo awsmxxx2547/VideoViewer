@@ -4,7 +4,7 @@
 APP_NAME := video_viewer
 
 CC:= gcc
-CFLAGS:= -Wall -Wextra -g -I/usr/include/x86_64-linux-gnu -I/usr/include/ -I./include 
+CFLAGS:= -Wall -Wextra -g -I/usr/include/ -I/usr/include/x86_64-linux-gnu -I./include 
 LDFLAGS:= -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
 
 INSTALL_DIR:= /usr/local/bin
