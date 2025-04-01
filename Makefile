@@ -44,7 +44,7 @@ INTEGRATION_TEST_OBJECTS 	:= $(patsubst $(INTEGRATION_TEST_DIR)/%.c,$(OBJ_DIR)/i
 # ========================
 .PHONY: all clean install uninstall help
 
-all: directories $(TARGET)
+all: directories $(TARGET) $(OBJ_DIR)/unit/%.o
 
 $(TARGET): $(OBJECTS)
 	@echo "Starting build process..."
