@@ -1,10 +1,6 @@
 name: INTEGRATION tests
 
-on:
-  push:
-    branches: [ "master", "cicd", "cicd-kek" ]
-  pull_request:
-    branches: [ "master", "cicd", "cicd-kek" ]
+on: [push, pull_request]
 
 jobs:
   integration-test:
