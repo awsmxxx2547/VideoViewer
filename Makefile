@@ -44,7 +44,7 @@ INTEGRATION_TEST_OBJECTS 	:= $(patsubst $(INTEGRATION_TEST_DIR)/%.c,$(OBJ_DIR)/i
 # ========================
 .PHONY: all clean install uninstall help test
 
-all: directories $(TARGET) $(OBJ_DIR)/unit/%.o
+all: directories $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	@echo "Starting build process..."
@@ -93,11 +93,9 @@ uninstall:
 # ========================
 .PHONY: test t-unit t-integration t-coverage t-samples
 
-test: directories t-samples t-unit-conf t-integration-conf
+test: directories t-samples t-unit t-integration-conf
 
-t-unit: t-samples t-unit-conf
-
-t-unit-conf: $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(UNIT_TEST_OBJECTS)
+t-unit: t-samples $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(UNIT_TEST_OBJECTS)
 	@echo "Linking unit tests..."
 	@$(CC) $^ -o $(TEST_BIN) $(LDFLAGS)
 	@echo "Running unit tests..."
