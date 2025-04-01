@@ -59,4 +59,4 @@ jobs:
       - name: Build app (Windows)
         run: |
           # Use MSYS2 Bash to call MinGW's make and build the project
-          C:\tools\msys64\usr\bin\bash.exe -l -c "mingw32-make"
+          C:\tools\msys64\usr\bin\bash.exe -l -c "make"
