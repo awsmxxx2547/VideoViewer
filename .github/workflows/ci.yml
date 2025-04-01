@@ -15,7 +15,7 @@ jobs:
           sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev \
             libswscale-dev libswresample-dev libsdl2-dev
 
-      - name: Build app
+      - name: Build app (Linux)
         run: make
 
   macos-build:
@@ -36,7 +36,7 @@ jobs:
           brew update
           brew install sdl2 ffmpeg
       
-      - name: Build app
+      - name: Build app (macOS)
         run: make
   windows-build:
     runs-on: windows-latest
@@ -46,7 +46,16 @@ jobs:
 
       - name: Install dependencies (Windows)
         run: |
-          choco install ffmpeg sdl2 pkg-config mingw
+          choco install mingw msys2
+          refreshenv
+
+      - name: Install MSYS2 packages (SDL2, FFmpeg, pkg-config)
+        run: |
+          # Update MSYS2 and install the required packages
+          C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm"
+          C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 pkg-config mingw-w64-x86_64-ffmpeg"
       
-      - name: Build app
-        run: make
+      - name: Build app (Windows)
+        run: |
+          # Use MSYS2 Bash to call MinGW's make and build the project
+          C:\tools\msys64\usr\bin\bash.exe -l -c "mingw32-make"
