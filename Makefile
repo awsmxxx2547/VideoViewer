@@ -111,7 +111,9 @@ t-samples:
 	@$(SCRIPTS_DIR)/download_test_samples.sh
 
 $(OBJ_DIR)/unit/%.o: $(UNIT_TEST_DIR)/%.c
-	@$(CC) $(CFLAGS) $(shell pkg-config --cflags sdl2) -Iinclude -c $< -o $@
+	@mkdir -p $(@D)
+	@echo "🛠️  Building unit test $<..."
+	@$(CC) $(CFLAGS) -I$(TEST_DIR) -c $< -o $@
 
 $(OBJ_DIR)/integration/%.o: $(INTEGRATION_TEST_DIR)/%.c
 	@mkdir -p $(@D)
