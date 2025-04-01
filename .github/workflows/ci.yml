@@ -50,11 +50,12 @@ jobs:
           Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
           refreshenv
 
-      - name: Install MSYS2 packages (SDL2, FFmpeg-packages, pkg-config)
+      - name: First-stage update (allow restart)
+        run: C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm || true"
+
+      - name: Install packages in fresh session
         run: |
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
-          pacman -Syu --noconfirm --needed &&
-          pacman -S --noconfirm --needed \
+          C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm --needed \
           mingw-w64-x86_64-gcc \
           mingw-w64-x86_64-make \
           mingw-w64-x86_64-SDL2 \
