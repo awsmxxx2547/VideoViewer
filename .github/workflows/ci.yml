@@ -65,10 +65,7 @@ jobs:
               mingw-w64-x86_64-gcc \
               mingw-w64-x86_64-SDL2 \
               mingw-w64-x86_64-pkg-config \
-              mingw-w64-x86_64-avcodec \
-              mingw-w64-x86_64-avformat \
-              mingw-w64-x86_64-avutil \
-              mingw-w64-x86_64-swscale
+              mingw-w64-x86_64-ffmpeg
           "
 
       - name: Verify installation
