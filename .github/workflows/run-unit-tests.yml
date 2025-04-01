@@ -15,5 +15,6 @@ jobs:
 
       - name: Run INTEGRATION tests
         run: |
+          export SDL_AUDIODRIVER=dummy
           make
           make t-unit
