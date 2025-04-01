@@ -2,14 +2,20 @@
 # Build Configuration
 # ========================
 APP_NAME := video_viewer
+PLATFORM:= $(shell uname -s)
 
 CC:= gcc
 CFLAGS:= -Wall -Wextra -g -I./include $(shell pkg-config --cflags libavformat libavcodec libavutil libswscale libswresample sdl2)
 LDFLAGS:=$(shell pkg-config --libs libavformat libavcodec libavutil libswscale libswresample sdl2)
 
-INSTALL_DIR:= /usr/local/bin
-TARGET:= build/bin/$(APP_NAME)
-PLATFORM:= $(shell uname -s)
+ifeq ($(PLATFORM), Windows_NT)
+	INSTALL_DIR:= "C:/Program Files/VideoViewer"
+	TARGET:= build/bin/$(APP_NAME).exe
+	LDFLAGS+=-static-libgcc
+else
+	INSTALL_DIR:= /usr/local/bin
+	TARGET:= build/bin/$(APP_NAME)
+endif
 
 # ========================
 # File Paths

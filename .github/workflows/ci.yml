@@ -34,7 +34,19 @@ jobs:
       - name: Install dependencies (macOS)
         run: |
           brew update
-          brew install sdl2 ffmpeg pkg-config
+          brew install sdl2 ffmpeg
+      
+      - name: Build app
+        run: make
+  windows-build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (Windows)
+        run: |
+          choco install ffmpeg sdl2 pkg-config mingw
       
       - name: Build app
         run: make
