@@ -47,9 +47,10 @@ jobs:
       - name: Install dependencies (Windows)
         run: |
           choco install msys2 --params="/NoUpdate" -y
+          Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
           refreshenv
 
-      - name: Install MSYS2 packages (SDL2, FFmpeg, pkg-config)
+      - name: Install MSYS2 packages (SDL2, FFmpeg-packages, pkg-config)
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm"
           C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm 
@@ -59,6 +60,7 @@ jobs:
           mingw-w64-x86_64-libavcodec 
           mingw-w64-x86_64-libavformat 
           mingw-w64-x86_64-libavutil 
+          mingw-w64-x86_64-pkg-config 
           mingw-w64-x86_64-libswscale 
           mingw-w64-x86_64-libswresample"
  
