@@ -47,6 +47,7 @@ jobs:
       - name: Install dependencies (Windows)
         run: |
           choco install mingw msys2
+          Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
           refreshenv
 
       - name: Install MSYS2 packages (SDL2, FFmpeg, pkg-config)
