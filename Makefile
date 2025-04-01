@@ -136,7 +136,6 @@ t-coverage: clean test
 .PHONY: version version-major version-minor version-patch
 
 VERSION_FILE := VERSION
-VERSION_SRC := src/version.c
 
 # MAJOR.MINOR.PATCH -- semantic versioning
 
