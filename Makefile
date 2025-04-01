@@ -59,7 +59,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 # Development Utilities
 # ========================
 directories:
-	@mkdir -p $(BUILD_DIR) $(BIN_DIR) $(OBJ_DIR)
+	@mkdir -p $(BUILD_DIR) $(BIN_DIR) $(OBJ_DIR) 
 
 clean:
 	@echo "Cleaning build artifacts..."
@@ -113,9 +113,9 @@ t-samples:
 	@$(SCRIPTS_DIR)/download_test_samples.sh
 
 $(OBJ_DIR)/unit/%.o: $(UNIT_TEST_DIR)/%.c
-	@sudo mkdir -p $(@D)
+	@mkdir -p $(@D)
 	@echo "🛠️  Building unit test $<..."
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) I$(TEST_DIR) -c $< -o $@
 
 $(OBJ_DIR)/integration/%.o: $(INTEGRATION_TEST_DIR)/%.c
 	@mkdir -p $(@D)
