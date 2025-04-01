@@ -4,15 +4,12 @@
 APP_NAME := video_viewer
 
 CC:= gcc
-CFLAGS:= -Wall -Wextra -g -I/usr/include/ -I/usr/include/x86_64-linux-gnu -I./include 
-LDFLAGS:= -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
-
-CFLAGS  += $(shell pkg-config --cflags libavformat libavcodec libavutil libswscale libswresample sdl2)
-LDFLAGS += $(shell pkg-config --libs libavformat libavcodec libavutil libswscale libswresample sdl2)
+CFLAGS:= -Wall -Wextra -g -I./include $(shell pkg-config --cflags libavformat libavcodec libavutil libswscale libswresample sdl2)
+LDFLAGS:=$(shell pkg-config --libs libavformat libavcodec libavutil libswscale libswresample sdl2)
 
 INSTALL_DIR:= /usr/local/bin
 TARGET:= build/bin/$(APP_NAME)
-PLATFORM:= $(uname -s)
+PLATFORM:= $(shell uname -s)
 
 # ========================
 # File Paths
