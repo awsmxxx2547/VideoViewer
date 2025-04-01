@@ -130,8 +130,35 @@ t-coverage: clean test
 	@gcovr --root . --exclude tests/ --html --html-details -o $(COVERAGE_REPORTS_DIR)/coverage_report.html
 	@echo "📄 Coverage report generated: coverage_report.html"
 
+# ========================
+# Release
+# ========================
+.PHONY: version version-major version-minor version-patch
 
+VERSION_FILE := VERSION
+VERSION_SRC := src/version.c
 
+# MAJOR.MINOR.PATCH -- semantic versioning
 
+# Default version bump (patch)
+version: version-patch
 
+# Bump major version
+version-major:
+	@./scripts/bump_version.sh major
 
+# Bump minor version
+version-minor:
+	@./scripts/bump_version.sh minor
+
+# Bump patch version
+version-patch:
+	@./scripts/bump_version.sh patch
+
+# Show current version
+current-version:
+	@if [ -f $(VERSION_FILE) ]; then \
+		echo "Current version: $$(cat $(VERSION_FILE))"; \
+	else \
+		echo "VERSION file not found. Run 'make version' to create it."; \
+	fi

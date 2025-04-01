@@ -36,9 +36,7 @@ esac
 
 new_version="$major.$minor.$patch"
 echo "$new_version" > VERSION
-
-# Update version.c
-sed -i.bak "s/const char\* VERSION = \".*\"/const char\* VERSION = \"$new_version\"/" src/version.c
-rm src/version.c.bak
+echo "#define VERSION \"$new_version\"" > include/version.h
+echo "$new_version" >> VERSION_LIST
 
 echo "Version bumped to: $new_version"
