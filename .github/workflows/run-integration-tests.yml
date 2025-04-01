@@ -1,0 +1,23 @@
+name: 
+
+on:
+  push:
+    branches: [ "master", "cicd" ]
+  pull_request:
+    branches: [ "master", "cicd" ]
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: docker build -t my-c-project .
+
+      - name: Run Docker Container and Build
+        run: docker run --rm -v $(pwd):/app my-c-project make
+
+      - name: Run INTEGRATION tests
+        run: make t-integration

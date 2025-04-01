@@ -1,43 +1,43 @@
 # ========================
 # Build Configuration
 # ========================
-APP_NAME 					:= video_viewer
+APP_NAME := video_viewer
 
-CC 							:= gcc
-CFLAGS 						:= -Wall -Wextra -g -Iinclude 
-LDFLAGS 					:= -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
+CC:= gcc
+CFLAGS:= -Wall -Wextra -g -I./include
+LDFLAGS:= -lSDL2 -lavformat -lavcodec -lavutil -lswscale -lswresample
 
-INSTALL_DIR 				:= /usr/local/bin
-TARGET 						:= build/bin/$(APP_NAME)
-PLATFORM 					:= $(uname -s)
+INSTALL_DIR:= /usr/local/bin
+TARGET:= build/bin/$(APP_NAME)
+PLATFORM:= $(uname -s)
 
 # ========================
 # File Paths
 # ========================
-SRC_DIR 					:= src
-BUILD_DIR 					:= build
-BIN_DIR 					:= $(BUILD_DIR)/bin
-OBJ_DIR 					:= $(BUILD_DIR)/obj
-SCRIPTS_DIR 				:= scripts
+SRC_DIR:= src
+BUILD_DIR:= build
+BIN_DIR:= $(BUILD_DIR)/bin
+OBJ_DIR:= $(BUILD_DIR)/obj
+SCRIPTS_DIR:= scripts
 
-SOURCES 					:= $(wildcard $(SRC_DIR)/*.c)
-OBJECTS 					:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
+SOURCES:= $(wildcard $(SRC_DIR)/*.c)
+OBJECTS:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
 # ========================
 # Test Paths
 # ========================
-TEST_DIR 					:= tests
-TEST_BIN 					:= $(BIN_DIR)/tests
-UNIT_TEST_DIR 				:= $(TEST_DIR)/unit
-INTEGRATION_TEST_DIR 		:= $(TEST_DIR)/integration
-TEST_SAMPLES_DIR 			:= $(INTEGRATION_TEST_DIR)/test_samples
-COVERAGE_REPORTS_DIR 		:= coverage_reports
+TEST_DIR:= tests
+TEST_BIN:= $(BIN_DIR)/tests
+UNIT_TEST_DIR:= $(TEST_DIR)/unit
+INTEGRATION_TEST_DIR:= $(TEST_DIR)/integration
+TEST_SAMPLES_DIR:= $(INTEGRATION_TEST_DIR)/test_samples
+COVERAGE_REPORTS_DIR:= coverage_reports
 
-UNIT_TEST_SOURCES 			:= $(wildcard $(UNIT_TEST_DIR)/*.c)
-INTEGRATION_TEST_SOURCES 	:= $(wildcard $(INTEGRATION_TEST_DIR)/*.c)
+UNIT_TEST_SOURCES:= $(wildcard $(UNIT_TEST_DIR)/*.c)
+INTEGRATION_TEST_SOURCES:= $(wildcard $(INTEGRATION_TEST_DIR)/*.c)
 
-UNIT_TEST_OBJECTS 			:= $(patsubst $(UNIT_TEST_DIR)/%.c,$(OBJ_DIR)/unit/%.o,$(UNIT_TEST_SOURCES))
-INTEGRATION_TEST_OBJECTS 	:= $(patsubst $(INTEGRATION_TEST_DIR)/%.c,$(OBJ_DIR)/integration/%.o,$(INTEGRATION_TEST_SOURCES))
+UNIT_TEST_OBJECTS:= $(patsubst $(UNIT_TEST_DIR)/%.c,$(OBJ_DIR)/unit/%.o,$(UNIT_TEST_SOURCES))
+INTEGRATION_TEST_OBJECTS:= $(patsubst $(INTEGRATION_TEST_DIR)/%.c,$(OBJ_DIR)/integration/%.o,$(INTEGRATION_TEST_SOURCES))
 
 # ========================
 # Build Targets
@@ -59,7 +59,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 # Development Utilities
 # ========================
 directories:
-	@mkdir -p $(BUILD_DIR) $(BIN_DIR) $(OBJ_DIR) $(OBJ_DIR)/unit $(OBJ_DIR)/integration
+	@mkdir -p $(BUILD_DIR) $(BIN_DIR) $(OBJ_DIR) $(OBJ_DIR)/unit $(OBJ_DIR)/integration $(COVERAGE_REPORTS_DIR)
 
 clean:
 	@echo "Cleaning build artifacts..."
@@ -93,9 +93,12 @@ uninstall:
 # ========================
 .PHONY: test t-unit t-integration t-coverage t-samples
 
-test: directories t-samples t-unit t-integration-conf
+test: directories t-samples t-unit-conf t-integration-conf
 
-t-unit: t-samples $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(UNIT_TEST_OBJECTS)
+t-unit: t-samples t-unit-conf
+t-integration: t-samples t-integration-conf
+
+t-unit-conf: $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(UNIT_TEST_OBJECTS)
 	@echo "Linking unit tests..."
 	@$(CC) $^ -o $(TEST_BIN) $(LDFLAGS)
 	@echo "Running unit tests..."
