@@ -68,4 +68,7 @@ jobs:
  
       - name: Build app (Windows)
         run: |
-          C:\tools\msys64\usr\bin\bash.exe -l -c "make"
+          C:\tools\msys64\usr\bin\bash.exe -l -c "
+          export PATH=/mingw64/bin:$PATH
+          make
+          "
