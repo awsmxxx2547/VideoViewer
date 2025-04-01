@@ -20,8 +20,8 @@ jobs:
           -v /usr/share/alsa:/usr/share/alsa \
           -v /etc/asound.conf:/etc/asound.conf \
           -v "$(pwd):/app" \
-                                           -w /app \
-                                           my-c-project make
+                          -w /app \
+                          my-c-project
 
       - name: Run UNIT tests
         run: make t-unit
