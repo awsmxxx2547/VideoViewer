@@ -1,5 +1,7 @@
 #include "../include/video.h"
 #include "../include/sdl.h"
+#include <libavutil/mem.h>
+#include <stdint.h>
 
 int init_video(const char *filename, AVFormatContext **format_context, 
                AVCodecContext **video_codec_context, int *video_stream_index,
@@ -133,12 +135,13 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
             fprintf(stderr, "Failed to initialize resampler\n");
             swr_free(&swr_ctx);
             audio_stream_idx = -1;
-        } else if (av_samples_alloc_array_and_samples(&resampled_data, &resampled_linesize,
-                                                   audio_spec.channels,
-                                                   4096, AV_SAMPLE_FMT_S16, 0) < 0) {
-            fprintf(stderr, "Could not allocate samples\n");
-            swr_free(&swr_ctx);
-            audio_stream_idx = -1;
+        } else {
+            resampled_data = av_mallocz(sizeof(uint8_t *) * audio_spec.channels);
+            if (!resampled_data) {
+                fprintf(stderr, "Could not allocate samples\n");
+                swr_free(&swr_ctx);
+                audio_stream_idx = -1;
+            }
         }
         av_channel_layout_uninit(&out_ch_layout);
     }
