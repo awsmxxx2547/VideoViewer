@@ -19,9 +19,16 @@ jobs:
           sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev \
             libswscale-dev libswresample-dev libsdl2-dev
 
-      - name: Install dependencies (macOS)
+      - name: Install Homebrew (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+          echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bashrc
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
           brew update
           brew install sdl2 ffmpeg pkg-config
