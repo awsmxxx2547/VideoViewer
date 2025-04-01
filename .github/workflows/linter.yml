@@ -6,6 +6,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -14,9 +15,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y clang-tidy cppcheck
-
-      - name: Build Docker Image
-        run: docker build -t my-c-project .
+          sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev
 
       - name: Run clang-tidy
         run: |
