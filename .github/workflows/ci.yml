@@ -51,8 +51,11 @@ jobs:
           refreshenv
 
       - name: First-stage update (allow restart)
-        run: C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm || true"
-
+        run: |
+          C:\tools\msys64\usr\bin\bash.exe -l -c "
+          pacman --noconfirm -Syuu || echo 'MSYS2 update completed (session terminated)' >&2
+          "
+          exit 0  # Always succeed this step
       - name: Install packages in fresh session
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm --needed \
