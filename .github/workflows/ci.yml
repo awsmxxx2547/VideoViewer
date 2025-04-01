@@ -3,24 +3,25 @@ name: CI/CD
 on: [push, pull_request]
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: {{ matrix.os }}
+  linux-build:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install dependencies (Linux)
-        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev \
             libswscale-dev libswresample-dev libsdl2-dev
 
+  macos-build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Install Homebrew (macOS)
-        if: matrix.os == 'macos-latest'
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
@@ -28,7 +29,6 @@ jobs:
           eval "$(/opt/homebrew/bin/brew shellenv)"
 
       - name: Install dependencies (macOS)
-        if: matrix.os == 'macos-latest'
         run: |
           brew update
           brew install sdl2 ffmpeg pkg-config
