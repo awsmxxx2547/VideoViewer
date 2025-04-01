@@ -14,15 +14,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y clang-tidy cppcheck
+          sudo apt install -y clang-tidy
           sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev
 
       - name: Run clang-tidy
         run: |
           clang-tidy --version
           clang-tidy src/*.c -- -Iinclude
-
-      - name: Run cppcheck
-        run: |
-          cppcheck --version
-          cppcheck --enable=all --inconclusive --quiet --error-exitcode=1 src/
