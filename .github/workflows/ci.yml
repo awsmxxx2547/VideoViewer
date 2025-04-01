@@ -84,18 +84,19 @@ jobs:
       - name: Build project
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "
-            # Force MinGW environment
-            export MSYSTEM=MINGW64
-            source /etc/profile
-            
-            # Use absolute path to make
-            if [ -f /mingw64/bin/make.exe ]; then
-              echo '=== Building with make ==='
-              /mingw64/bin/make.exe
-            else
-              echo 'ERROR: make.exe not found in /mingw64/bin'
-              echo 'Installed packages containing make:'
-              pacman -Ql | grep make.exe
-              exit 1
-            fi
+          # Force MinGW environment
+          export MSYSTEM=MINGW64
+          source /etc/profile
+
+          # Create make.exe symlink if missing
+          if [ ! -f /mingw64/bin/make.exe ] && [ -f /mingw64/bin/mingw32-make.exe ]; then
+          ln -s /mingw64/bin/mingw32-make.exe /mingw64/bin/make.exe
+          fi
+          echo '=== Build Environment ==='
+          which make
+          which gcc
+          make --version
+
+          # Build
+          make
           "
