@@ -107,13 +107,15 @@ t-integration-conf: $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(INTEGRATION_TES
 	@echo "Running integration tests..."
 	@./$(TEST_BIN) --integration
 
+SDL2_INCLUDE := -I/usr/include/SDL2
+
 t-samples:
 	@$(SCRIPTS_DIR)/download_test_samples.sh
 
 $(OBJ_DIR)/unit/%.o: $(UNIT_TEST_DIR)/%.c
 	@mkdir -p $(@D)
 	@echo "🛠️  Building unit test $<..."
-	@$(CC) $(CFLAGS) -I$(TEST_DIR) -c $< -o $@
+	@$(CC) $(CFLAGS) $(SDL2_INCLUDE) -I$(TEST_DIR) -c $< -o $@
 
 $(OBJ_DIR)/integration/%.o: $(INTEGRATION_TEST_DIR)/%.c
 	@mkdir -p $(@D)
