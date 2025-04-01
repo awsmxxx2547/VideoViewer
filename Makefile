@@ -115,7 +115,7 @@ t-samples:
 $(OBJ_DIR)/unit/%.o: $(UNIT_TEST_DIR)/%.c
 	@mkdir -p $(@D)
 	@echo "🛠️  Building unit test $<..."
-	@$(CC) $(CFLAGS) I$(TEST_DIR) -c $< -o $@
+	@$(CC) $(CFLAGS) -I$(TEST_DIR) -c $< -o $@
 
 $(OBJ_DIR)/integration/%.o: $(INTEGRATION_TEST_DIR)/%.c
 	@mkdir -p $(@D)
