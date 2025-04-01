@@ -74,9 +74,15 @@ jobs:
           source /etc/profile
 
           # Verify tools are available
+            echo '=== PATH ==='
+            echo \$PATH
+            echo '=== Make version ==='
+            /mingw64/bin/make.exe --version
+            echo '=== GCC version ==='
+            gcc --version
           which make
           which gcc
 
           # Execute build
-          make
+          /mingw64/bin/make.exe
           "
