@@ -103,15 +103,17 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
     AVPacket *packet = av_packet_alloc();
     AVFrame *video_frame = av_frame_alloc();
     AVFrame *audio_frame = av_frame_alloc();
+
+    struct SwrContext *swr_ctx = NULL;
+    uint8_t **resampled_data = NULL;
+    int resampled_linesize = 0;
+
     if (!packet || !video_frame || !audio_frame) {
         fprintf(stderr, "Could not allocate frames/packet\n");
         goto cleanup;
     }
 
     // Initialize audio resampler if audio stream exists
-    struct SwrContext *swr_ctx = NULL;
-    uint8_t **resampled_data = NULL;
-    int resampled_linesize = 0;
     
     if (audio_codec_ctx && audio_stream_idx != -1) {
         swr_ctx = swr_alloc();
@@ -141,6 +143,7 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
             fprintf(stderr, "Could not allocate samples\n");
             swr_free(&swr_ctx);
             swr_ctx = NULL;
+            resampled_data = NULL;
             audio_stream_idx = -1;
         }
         av_channel_layout_uninit(&out_ch_layout);
