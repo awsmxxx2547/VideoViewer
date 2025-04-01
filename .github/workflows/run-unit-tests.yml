@@ -21,7 +21,7 @@ jobs:
           -v /etc/asound.conf:/etc/asound.conf \
           -v "$(pwd):/app" \
                           -w /app \
-                          my-c-project make
+                          my-c-project make -d
 
       - name: Run UNIT tests
         run: make t-unit
