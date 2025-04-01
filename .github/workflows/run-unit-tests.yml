@@ -19,7 +19,7 @@ jobs:
           -e ALSA_CARD=0 \
           -v /usr/share/alsa:/usr/share/alsa \
           -v /etc/asound.conf:/etc/asound.conf \
-          -v "${{ github.workspace }}:/app" \
+          -v "$(pwd):/app" \
                                            -w /app \
                                            my-c-project make
 
