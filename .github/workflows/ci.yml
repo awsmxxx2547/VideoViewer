@@ -59,15 +59,11 @@ jobs:
       - name: Install packages in fresh session
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm --needed \
-          mingw-w64-ucrt-x86_64-gcc \
-          mingw-w64-ucrt-x86_64-make \
-          mingw-w64-ucrt-x86_64-SDL2 \
-          mingw-w64-ucrt-x86_64-libavcodec \
-          mingw-w64-ucrt-x86_64-libavformat \
-          mingw-w64-ucrt-x86_64-libavutil \
-          mingw-w64-ucrt-x86_64-pkg-config \
-          mingw-w64-ucrt-x86_64-libswscale \
-          mingw-w64-ucrt-x86_64-libswresample
+          mingw-w64-x86_64-gcc \
+          mingw-w64-x86_64-make \
+          mingw-w64-x86_64-SDL2 \
+          mingw-w64-x86_64-pkg-config \
+          mingw-w64-x86_64-ffmpeg
           "
  
       - name: Build app (Windows)
