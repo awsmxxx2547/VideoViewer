@@ -46,17 +46,22 @@ jobs:
 
       - name: Install dependencies (Windows)
         run: |
-          choco install mingw msys2
-          Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+          choco install msys2 --params="/NoUpdate" -y
           refreshenv
 
       - name: Install MSYS2 packages (SDL2, FFmpeg, pkg-config)
         run: |
-          # Update MSYS2 and install the required packages
           C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -Syu --noconfirm"
-          C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 pkg-config mingw-w64-x86_64-ffmpeg"
-      
+          C:\tools\msys64\usr\bin\bash.exe -l -c "pacman -S --noconfirm 
+          mingw-w64-x86_64-gcc 
+          mingw-w64-x86_64-make 
+          mingw-w64-x86_64-SDL2 
+          mingw-w64-x86_64-libavcodec 
+          mingw-w64-x86_64-libavformat 
+          mingw-w64-x86_64-libavutil 
+          mingw-w64-x86_64-libswscale 
+          mingw-w64-x86_64-libswresample"
+ 
       - name: Build app (Windows)
         run: |
-          # Use MSYS2 Bash to call MinGW's make and build the project
           C:\tools\msys64\usr\bin\bash.exe -l -c "make"
