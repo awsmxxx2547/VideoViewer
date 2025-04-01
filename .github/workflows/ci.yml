@@ -9,12 +9,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev \
+            libswscale-dev libswresample-dev libsdl2-dev
 
-      - name: Build Docker Image
-        run: docker build -t my-c-project .
-
-      - name: Run Docker Container and Build
-        run: docker run --rm -v $(pwd):/app my-c-project make
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install sdl2 ffmpeg pkg-config
