@@ -69,6 +69,14 @@ jobs:
       - name: Build app (Windows)
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "
-          export PATH=/mingw64/bin:$PATH
+          # Set MinGW as active environment
+          export MSYSTEM=MINGW64
+          source /etc/profile
+
+          # Verify tools are available
+          which make
+          which gcc
+
+          # Execute build
           make
           "
