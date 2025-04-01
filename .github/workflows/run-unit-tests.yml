@@ -1,25 +1,19 @@
-name: Run UNIT Tests
+name: UNIT Tests
 
 on: [push, pull_request]
 
 jobs:
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Build Docker Image
-        run: docker build -t my-c-project .
+      - name: Install dependencies
+        run: sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev
 
-      - name: Run Docker Container and Build
+      - name: Run INTEGRATION tests
         run: |
-          docker run --rm \
-          -e ALSA_CARD=0 \
-          -v /usr/share/alsa:/usr/share/alsa \
-          -v /etc/asound.conf:/etc/asound.conf \
-          -v "$(pwd):/app" \
-                          -w /app \
-                          my-c-project make -d \
-                          make t-unit
+          make
+          make t-unit
