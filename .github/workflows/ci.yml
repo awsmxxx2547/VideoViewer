@@ -18,6 +18,21 @@ jobs:
       - name: Build app (Linux)
         run: make
 
+        mkdir -p artifacts
+        cp build/bin/video_viewer artifacts/
+        tar -czvf build_artifacts.tar.gz -C artifacts .
+      - name: Push Build Artifacts to `build` Branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions@github.com"
+          git fetch origin build || git checkout --orphan build
+          git checkout build
+          rm -rf *
+          tar -xzf ../build_artifacts.tar.gz
+          git add .
+          git commit -m "Auto-build: $(date)"
+          git push origin build --force
+
   macos-build:
     runs-on: macos-latest
 
