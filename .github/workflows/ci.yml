@@ -35,6 +35,8 @@ jobs:
           ls ../ -alh
           ls ../../ -alh
           ls ../VideoViewer -alh
+          ls ../../../ -alh
+          ls ../../../../ -alh
           tar -xzf build_artifacts.tar.gz
           git add .
           git commit -m "Auto-build: $(date)"
