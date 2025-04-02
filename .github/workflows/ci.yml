@@ -32,6 +32,7 @@ jobs:
           git checkout -B build origin/build
           rm -rf *
           ls -alh
+          ls ../ -alh
           tar -xzf build_artifacts.tar.gz
           git add .
           git commit -m "Auto-build: $(date)"
