@@ -20,7 +20,7 @@ extern int is_fullscreen;
 
 #define CHECK_IF(cond, msg) \
     if (cond) { \
-        fprintf_s(stderr, "%s: %s\n", msg, SDL_GetError()); \
+        printf("%s: %s\n", msg, SDL_GetError()); \
         return -1; \
     }
 
