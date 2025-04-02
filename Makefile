@@ -54,12 +54,12 @@ all: directories $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	@echo "Starting build process..."
-	$(CC) $^ -o $@ $(LDFLAGS)
+	@$(CC) $^ -o $@ $(LDFLAGS)
 	@echo "Build successful!"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "Compiling $<..."
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # ========================
 # Development Utilities

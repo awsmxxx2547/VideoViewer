@@ -54,10 +54,4 @@ jobs:
       - name: Verify installation
         shell: msys2 {0}
         run: |
-          gcc --version
-          pkg-config --version
-          ls
-          dir
-          find /mingw64/include -name avformat.h
-          uname
           mingw32-make all 
