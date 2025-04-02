@@ -92,36 +92,11 @@ jobs:
       - name: Build project
         shell: cmd
         run: |
-          call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
-            # Setup environment
-            export MSYSTEM=MINGW64
-            source /etc/profile
-            
-            # Create build directories
-            mkdir -p build/obj build/bin
-            
-            # Compile with proper include paths
-            gcc -Wall -Wextra -g \
-              -I./include \
-              -I/mingw64/include/SDL2 \
-              -D_GNU_SOURCE=1 -D_REENTRANT \
-              -c src/main.c -o build/obj/main.o
-              
-            gcc -Wall -Wextra -g \
-              -I./include \
-              -I/mingw64/include/SDL2 \
-              -D_GNU_SOURCE=1 -D_REENTRANT \
-              -c src/sdl.c -o build/obj/sdl.o
-              
-            gcc -Wall -Wextra -g \
-              -I./include \
-              -I/mingw64/include/SDL2 \
-              -D_GNU_SOURCE=1 -D_REENTRANT \
-              -c src/video.c -o build/obj/video.o
-            
-            # Link with proper library paths
-            gcc build/obj/main.o build/obj/sdl.o build/obj/video.o \
-              -L/mingw64/lib \
-              -o build/bin/video_viewer.exe \
-              -lavformat -lavcodec -lswscale -lswresample -lavutil -lSDL2
-          "
+          call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "set -x && \
+                export MSYSTEM=MINGW64 && \
+                source /etc/profile && \
+                mkdir -p build/obj build/bin && \
+                gcc -Wall -Wextra -g -I./include -I/mingw64/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/main.c -o build/obj/main.o && \
+                gcc -Wall -Wextra -g -I./include -I/mingw64/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/sdl.c -o build/obj/sdl.o && \
+                gcc -Wall -Wextra -g -I./include -I/mingw64/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/video.c -o build/obj/video.o && \
+                gcc build/obj/main.o build/obj/sdl.o build/obj/video.o -L/mingw64/lib -o build/bin/video_viewer.exe -lavformat -lavcodec -lswscale -lswresample -lavutil -lSDL2"
