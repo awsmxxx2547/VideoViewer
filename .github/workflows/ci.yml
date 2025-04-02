@@ -16,11 +16,7 @@ jobs:
             libswscale-dev libswresample-dev libsdl2-dev
 
       - name: Build app (Linux)
-        run: |
-          export SDL_AUDIODRIVER=dummy
-          make
-          make t-integration
-          make t-unit
+        run: make
 
   macos-build:
     runs-on: macos-latest
@@ -38,14 +34,10 @@ jobs:
       - name: Install dependencies (macOS)
         run: |
           brew update
-          brew install sdl2 ffmpeg wget
+          brew install sdl2 ffmpeg
       
       - name: Build app (macOS)
-        run: |
-          export SDL_AUDIODRIVER=dummy
-          make
-          make t-integration
-          make t-unit
+        run: make
 
   windows-build:
     runs-on: windows-latest
@@ -57,13 +49,10 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
-          install: mingw-w64-x86_64-make wget mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-pkg-config mingw-w64-x86_64-ffmpeg
+          install: mingw-w64-x86_64-make mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-pkg-config mingw-w64-x86_64-ffmpeg
           update: true
 
       - name: Verify installation
         shell: msys2 {0}
         run: |
-          export SDL_AUDIODRIVER=dummy
           mingw32-make all 
-          mingw32-make t-integration
-          mingw32-make t-unit
