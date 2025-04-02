@@ -43,22 +43,28 @@ jobs:
     runs-on: windows-latest
     env:
       MSYS2_ROOT: C:/tools/msys64
-      CACHE_VERSION: v2
+      CACHE_VERSION: v3
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Cache MSYS2 packages
         uses: actions/cache@v3
+        id: msys2-cache
         with:
           path: |
             ${{ env.MSYS2_ROOT }}/var/cache/pacman/pkg
             ${{ env.MSYS2_ROOT }}/mingw64
-          key: msys2-pkgs-${{ runner.os }}-${{ env.CACHE_VERSION }}
+          key: msys2-${{ runner.os }}-${{ env.CACHE_VERSION }}
           restore-keys: |
             msys2-${{ runner.os }}-
 
-      - name: Install dependencies (Windows)
+      - name: Show cache status
+        run: |
+          echo "Cache hit: ${{ steps.msys2-cache.outputs.cache-hit }}"
+          echo "Cache key: ${{ steps.msys2-cache.outputs.cache-primary-key }}"
+
+      - name: Setup MSYS2 (cache miss only)
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           choco install msys2 --params="/NoUpdate" -y
