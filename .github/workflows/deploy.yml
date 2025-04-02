@@ -17,7 +17,7 @@ jobs:
       - name: Read changelog
         description: Changelog is a description of changes between releases.
         id: changelog
-        run: | echo "changelog<<EOF" >> $GITHUB_ENV && cat CHANGELOG.md >> $GITHUB_ENV && echo "EOF"
+        run: echo "changelog<<EOF" >> $GITHUB_ENV && cat CHANGELOG.md >> $GITHUB_ENV && echo "EOF"
 
       - name: Create Release
         id: create_release
