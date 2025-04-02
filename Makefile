@@ -9,6 +9,7 @@ CFLAGS:= -Wall -Wextra -g -I./include $(shell pkg-config --cflags libavformat li
 LDFLAGS:=$(shell pkg-config --libs libavformat libavcodec libavutil libswscale libswresample sdl2)
 
 ifeq ($(PLATFORM), MINGW64_NT)
+	@echo "WINDOWS"
 	INSTALL_DIR:= "C:/Program Files/VideoViewer"
 	TARGET:= build/bin/$(APP_NAME).exe
 	LDFLAGS+=-static-libgcc

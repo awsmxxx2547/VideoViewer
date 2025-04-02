@@ -60,3 +60,4 @@ jobs:
           dir
           find /mingw64/include -name avformat.h
           uname
+          mingw32-make all 
