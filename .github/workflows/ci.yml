@@ -64,37 +64,20 @@ jobs:
           echo "Cache hit: ${{ steps.msys2-cache.outputs.cache-hit }}"
           echo "Cache key: ${{ steps.msys2-cache.outputs.cache-primary-key }}"
 
-      - name: Setup MSYS2 (cache miss only)
-        if: steps.msys2-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          choco install msys2 --params="/NoUpdate" -y
-          Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-          refreshenv
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-ffmpeg
 
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
-          pacman --noconfirm -Syuu || echo 'MSYS2 update completed (session terminated)' >&2
-          "
-          exit 0
-
-      - name: Install packages (cache miss only)
-        if: steps.msys2-cache.outputs.cache-hit != 'true'
-        shell: bash
+      - name: Build project (Windows)
+        shell: msys2
         run: |
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
-            pacman -S --needed --noconfirm \
-              mingw-w64-x86_64-make \
-              mingw-w64-x86_64-gcc \
-              mingw-w64-x86_64-SDL2 \
-              mingw-w64-x86_64-pkg-config \
-              mingw-w64-x86_64-ffmpeg
-          "
-
-      - name: Build project
-        shell: cmd
-        run: |
-          call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "set -x && \
-                export MSYSTEM=MINGW64 && \
-                source /etc/profile && \
+                export MSYSTEM=MINGW64
+                source /etc/profile
                 uname
-                "
