@@ -90,10 +90,9 @@ jobs:
 
       - name: Build project
         run: |
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
+          "%MSYS2_ROOT%\usr\bin\bash.exe" -l -c "
             export MSYSTEM=MINGW64
             source /etc/profile
             [ ! -f /mingw64/bin/make.exe ] && ln -s /mingw64/bin/mingw32-make.exe /mingw64/bin/make.exe
+          gcc -Wall -Wextra -g -I./include $(shell pkg-config --cflags libavformat libavcodec libavutil libswscale libswresample sdl2) -o video_viewer.exe src/video_viewer.c
           "
-          ls
-          pwd
