@@ -1,6 +1,5 @@
 #include "../include/video.h"
 #include "../include/sdl.h"
-#include <wchar.h>
 
 int init_video(const char *filename, AVFormatContext **format_context, 
                AVCodecContext **video_codec_context, int *video_stream_index,
