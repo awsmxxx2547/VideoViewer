@@ -38,18 +38,15 @@ jobs:
       
       - name: Build app (macOS)
         run: make
+
   windows-build:
     runs-on: windows-latest
     env:
       MSYS2_ROOT: C:/tools/msys64
+      CACHE_VERSION: v2
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Get Makefile hash
-        id: makefile-hash
-        run: |
-          echo "hash=$(git hash-object Makefile 2>/dev/null || echo 'no-makefile')" >> $GITHUB_OUTPUT
 
       - name: Cache MSYS2 packages
         uses: actions/cache@v3
@@ -57,9 +54,12 @@ jobs:
           path: |
             ${{ env.MSYS2_ROOT }}/var/cache/pacman/pkg
             ${{ env.MSYS2_ROOT }}/mingw64
-          key: msys2-pkgs-${{ runner.os }}-${{ steps.makefile-hash.outputs.hash }}-v1
+          key: msys2-pkgs-${{ runner.os }}-${{ env.CACHE_VERSION }}
+          restore-keys: |
+            msys2-${{ runner.os }}-
 
       - name: Install dependencies (Windows)
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           choco install msys2 --params="/NoUpdate" -y
           Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
