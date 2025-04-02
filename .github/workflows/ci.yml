@@ -43,50 +43,60 @@ jobs:
     runs-on: windows-latest
     env:
       MSYS2_ROOT: C:\tools\msys64
-      CACHE_VERSION: v1
+      CACHE_VERSION: v2
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache MSYS2 packages
-        uses: actions/cache@v3
-        id: msys2-cache
+      - name: Cache MSYS2 pacman package
+        uses: actions/cache@v4
+        id: msys2-pacman-cache
         with:
-          path: |
-            ${{ env.MSYS2_ROOT }}\var\cache\pacman\pkg
-            ${{ env.MSYS2_ROOT }}\mingw64
-          key: msys2-${{ runner.os }}-${{ env.CACHE_VERSION }}
-          restore-keys: |
-            msys2-${{ runner.os }}-
+          path: C:\msys64\var\cache\pacman\pkg
+        key: msys2-pacman-${{ runner.os }}-${{ env.CACHE_VERSION }}-${{ hashFiles('.github/workflows/**') }}
+        restore-keys: |
+          msys2-pacman-${{ runner.os }}-${{ env.CACHE_VERSION }}-
 
-      - name: Show cache status
+      - name: Show pacman cache status
+        if: always() # Run even if previous steps fail
+        shell: bash
         run: |
-          echo "Cache hit: ${{ steps.msys2-cache.outputs.cache-hit }}"
-          echo "Cache key: ${{ steps.msys2-cache.outputs.cache-primary-key }}"
+          echo "Cache hit: ${{ steps.msys2-pacman-cache.outputs.cache-hit }}"
+          echo "Cache key: ${{ steps.msys2-pacman-cache.outputs.cache-primary-key }}" # Note: output name changed in v4
 
-      - name: Setup MSYS2
-        if: steps.msys2-cache.outputs.cache-hit != 'true'
+          # Always run setup-msys2 to configure the environment (PATH etc.)
+          # It will use the cached packages if available, making installation fast
+      - name: Setup MSYS2 environment
         uses: msys2/setup-msys2@v2
         with:
-          update: true
-          install: >-
-            mingw-w64-x86_64-make
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-SDL2
-            mingw-w64-x86_64-pkg-config
-            mingw-w64-x86_64-ffmpeg
+          msystem: MINGW64 # Specify the desired environment (default is MINGW64)
+          update: true    # Update the MSYS2 base packages first
+          install: ${{ env.PACKAGE_LIST }} # Install desired packages ('--needed' is implied)
+          # The action automatically adds the correct bin dirs (e.g., C:\msys64\mingw64\bin) to PATH
 
+          # Use the msys2 shell provided by setup-msys2 for subsequent steps
+          # This ensures PATH and other environment variables are set correctly
       - name: Build project (Windows)
-        shell: cmd
+        shell: msys2 {0} # Use the msys2 shell provided by the setup action
         run: |
-          "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c '
-          export MSYSTEM=MINGW64
-          source /etc/profile
+          echo "--- Environment Info ---"
           gcc --version
           pkg-config --version
-          echo \"Current shell: \$SHELL\"
-          uname -a
-          [ ! -f /mingw64/bin/make.exe ] && ln -s /mingw64/bin/mingw32-make.exe /mingw64/bin/make.exe
-          make all
-          ls build/bin/
-          '
+          mingw32-make --version # Check the actual make command version
+          echo "PATH=$PATH"
+          pwd
+          ls -l
+
+          echo "--- Starting Build ---"
+          mingw32-make all
+
+          echo "--- Build Output ---"
+          ls -l build/bin/ || echo "Build output directory 'build/bin/' not found or empty."
+
+      - name: Upload Build Artifact
+        if: success() # Only run if build succeeded
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-output
+          path: |
+            build/bin/* # Adjust this path/pattern match your build output
