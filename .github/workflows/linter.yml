@@ -1,4 +1,4 @@
-name: Linter(C)
+name: linter(C)
 
 on: [push, pull_request]
 
