@@ -43,7 +43,7 @@ jobs:
     runs-on: windows-latest
     env:
       MSYS2_ROOT: C:\tools\msys64
-      CACHE_VERSION: v4
+      CACHE_VERSION: v1
 
     steps:
       - uses: actions/checkout@v4
@@ -95,8 +95,5 @@ jobs:
           call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "set -x && \
                 export MSYSTEM=MINGW64 && \
                 source /etc/profile && \
-                mkdir -p build/obj build/bin && \
-                gcc -Wall -Wextra -g -I./include -I/mingw64/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/main.c -o build/obj/main.o && \
-                gcc -Wall -Wextra -g -I./include -I/mingw64/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/sdl.c -o build/obj/sdl.o && \
-                gcc -Wall -Wextra -g -I./include -I/mingw64/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/video.c -o build/obj/video.o && \
-                gcc build/obj/main.o build/obj/sdl.o build/obj/video.o -L/mingw64/lib -o build/bin/video_viewer.exe -lavformat -lavcodec -lswscale -lswresample -lavutil -lSDL2"
+                make
+                "
