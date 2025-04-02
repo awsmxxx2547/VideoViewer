@@ -71,7 +71,11 @@ int test_playback(const char *filename) {
     return result;
 }
 
-int main() {
+int SDL_main(int argc, char* argv[])
+{
+    (void)argc;  
+    (void)argv;
+
     int overall_result = 0;
 
     overall_result |= test_playback("tests/integration/test_samples/sample1.mp4");
