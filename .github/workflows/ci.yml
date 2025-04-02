@@ -18,7 +18,6 @@ jobs:
       - name: Build app (Linux)
         run: |
           make
-
           mkdir -p artifacts
           cp build/bin/video_viewer artifacts/
           tar -czvf build_artifacts.tar.gz -C artifacts .
