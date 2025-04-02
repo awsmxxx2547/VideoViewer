@@ -98,5 +98,5 @@ jobs:
           make --version
 
           # Build
-          make
+          make -f Makefile
           "
