@@ -42,7 +42,7 @@ jobs:
   windows-build:
     runs-on: windows-latest
     env:
-      MSYS2_ROOT: C:/tools/msys64
+      MSYS2_ROOT: C:\tools\msys64
       CACHE_VERSION: v4
 
     steps:
@@ -53,8 +53,8 @@ jobs:
         id: msys2-cache
         with:
           path: |
-            ${{ env.MSYS2_ROOT }}/var/cache/pacman/pkg
-            ${{ env.MSYS2_ROOT }}/mingw64
+            ${{ env.MSYS2_ROOT }}\var\cache\pacman\pkg
+            ${{ env.MSYS2_ROOT }}\mingw64
           key: msys2-${{ runner.os }}-${{ env.CACHE_VERSION }}
           restore-keys: |
             msys2-${{ runner.os }}-
