@@ -53,9 +53,9 @@ jobs:
         id: msys2-pacman-cache
         with:
           path: C:\msys64\var\cache\pacman\pkg
-        key: msys2-pacman-${{ runner.os }}-${{ env.CACHE_VERSION }}-${{ hashFiles('.github/workflows/**') }}
+        key: msys2-pacman-${{ runner.os }}-${{ env.CACHE_VERSION }}
         restore-keys: |
-          msys2-pacman-${{ runner.os }}-${{ env.CACHE_VERSION }}-
+          msys2-pacman-${{ runner.os }}-
 
       - name: Show pacman cache status
         if: always() # Run even if previous steps fail

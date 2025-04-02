@@ -8,7 +8,7 @@ CC:= gcc
 CFLAGS:= -Wall -Wextra -g -I./include $(shell pkg-config --cflags libavformat libavcodec libavutil libswscale libswresample sdl2)
 LDFLAGS:=$(shell pkg-config --libs libavformat libavcodec libavutil libswscale libswresample sdl2)
 
-ifeq ($(PLATFORM), Linux || macOS)
+ifeq ($(PLATFORM), Linux || Darwin)
 	INSTALL_DIR:= /usr/local/bin
 	TARGET:= build/bin/$(APP_NAME)
 else
