@@ -77,15 +77,14 @@ jobs:
             mingw-w64-x86_64-ffmpeg
 
       - name: Build project (Windows)
+        shell: cmd
         run: |
-          $bash = "$env:MSYS2_ROOT\usr\bin\bash.exe"
-          & $bash -l -c @"
+          call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
           export MSYSTEM=MINGW64
           source /etc/profile
-          uname
           gcc --version
           pkg-config --version
           echo "Current shell: $SHELL"
+          uname
+          [ ! -f /mingw64/bin/make.exe ] && ln -s /mingw64/bin/mingw32-make.exe /mingw64/bin/make.exe
           make
-          "@
-        shell: powershell
