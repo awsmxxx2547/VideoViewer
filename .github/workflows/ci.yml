@@ -37,7 +37,7 @@ jobs:
           tar -xzf ../build_artifacts.tar.gz
           git add .
           git commit -m "Auto-build: $(date)"
-          git push origin build --force
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git build --force
           rm -rf ../build_artifacts.tar.gz
 
   macos-build:
