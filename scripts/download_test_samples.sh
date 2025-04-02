@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SAMPLES_DIR="tests/integration/test_samples/"
-mkdir -p $SAMPLES_DIR
+mkdir -p "$SAMPLES_DIR"
 
 declare -A sample_videos=(
   ["sample1.mp4"]="https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4"
