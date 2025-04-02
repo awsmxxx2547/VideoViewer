@@ -91,3 +91,5 @@ jobs:
 
             make -f Makefile
           "
+          ls
+          pwd
