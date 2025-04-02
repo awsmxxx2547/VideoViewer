@@ -21,6 +21,9 @@ jobs:
           mkdir -p artifacts
           cp build/bin/video_viewer artifacts/
           tar -czvf build_artifacts.tar.gz -C artifacts .
+      - name: List files before extracting
+        run: ls -alh
+
       - name: Push Build Artifacts to `build` Branch
         run: |
           git config --global user.name "github-actions[bot]"
@@ -28,7 +31,7 @@ jobs:
           git fetch origin build || git checkout --orphan build
           git checkout -B build origin/build
           rm -rf *
-          tar -xzf ../build_artifacts.tar.gz
+          tar -xzf build_artifacts.tar.gz
           git add .
           git commit -m "Auto-build: $(date)"
           git push origin build --force
