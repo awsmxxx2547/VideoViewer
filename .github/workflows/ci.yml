@@ -26,7 +26,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions@github.com"
           git fetch origin build || git checkout --orphan build
-          git checkout build
+          git checkout -B build origin/build
           rm -rf *
           tar -xzf ../build_artifacts.tar.gz
           git add .
