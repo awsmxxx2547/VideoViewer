@@ -16,11 +16,12 @@ jobs:
             libswscale-dev libswresample-dev libsdl2-dev
 
       - name: Build app (Linux)
-        run: make
+        run: |
+          make
 
-        mkdir -p artifacts
-        cp build/bin/video_viewer artifacts/
-        tar -czvf build_artifacts.tar.gz -C artifacts .
+          mkdir -p artifacts
+          cp build/bin/video_viewer artifacts/
+          tar -czvf build_artifacts.tar.gz -C artifacts .
       - name: Push Build Artifacts to `build` Branch
         run: |
           git config --global user.name "github-actions[bot]"
