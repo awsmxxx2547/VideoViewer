@@ -16,7 +16,11 @@ jobs:
             libswscale-dev libswresample-dev libsdl2-dev
 
       - name: Build app (Linux)
-        run: make
+        run: |
+          export SDL_AUDIODRIVER=dummy
+          make
+          make t-integration
+          make t-unit
 
   macos-build:
     runs-on: macos-latest
@@ -37,7 +41,11 @@ jobs:
           brew install sdl2 ffmpeg
       
       - name: Build app (macOS)
-        run: make
+        run: |
+          export SDL_AUDIODRIVER=dummy
+          make
+          make t-integration
+          make t-unit
 
   windows-build:
     runs-on: windows-latest
@@ -55,4 +63,7 @@ jobs:
       - name: Verify installation
         shell: msys2 {0}
         run: |
+          export SDL_AUDIODRIVER=dummy
           mingw32-make all 
+          mingw32-make t-integration
+          mingw32-make t-unit
