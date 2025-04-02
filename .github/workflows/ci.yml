@@ -77,7 +77,6 @@ jobs:
             mingw-w64-x86_64-ffmpeg
 
       - name: Build project (Windows)
-        shell: msys2 {0}
         run: |
           export MSYSTEM=MINGW64
           source /etc/profile
