@@ -65,7 +65,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 # Development Utilities
 # ========================
 directories:
-	@mkdir -p $(BUILD_DIR) $(BIN_DIR) $(OBJ_DIR) $(OBJ_DIR)/unit $(OBJ_DIR)/integration $(COVERAGE_REPORTS_DIR)
+	@mkdir -p $(BUILD_DIR) $(BIN_DIR) $(OBJ_DIR) $(OBJ_DIR)/unit $(OBJ_DIR)/integration 
 
 clean:
 	@echo "Cleaning build artifacts..."

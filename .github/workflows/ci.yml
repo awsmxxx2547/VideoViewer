@@ -21,6 +21,8 @@ jobs:
           mkdir -p artifacts
           cp build/bin/video_viewer artifacts/
           tar -czvf build_artifacts.tar.gz -C artifacts .
+          cp ./build_artifacts.tar.gz ../
+
       - name: List files before extracting
         run: ls -alh
 
@@ -30,11 +32,13 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git fetch origin build || git checkout --orphan build
           git checkout -B build origin/build
+          rm -rf *
           ls -alh
-          tar -xzf build_artifacts.tar.gz
+          tar -xzf ../build_artifacts.tar.gz
           git add .
           git commit -m "Auto-build: $(date)"
           git push origin build --force
+          rm -rf ../build_artifacts.tar.gz
 
   macos-build:
     runs-on: macos-latest
