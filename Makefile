@@ -101,8 +101,8 @@ uninstall:
 
 test: directories t-samples t-unit-conf t-integration-conf
 
-t-unit: t-unit-conf
-t-integration: t-integration-conf
+t-unit: t-samples t-unit-conf
+t-integration: t-samples t-integration-conf
 
 t-unit-conf: $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS)) $(UNIT_TEST_OBJECTS)
 	@echo "Linking unit tests..."
