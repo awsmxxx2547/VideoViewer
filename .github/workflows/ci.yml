@@ -95,7 +95,7 @@ jobs:
             source /etc/profile
             [ ! -f /mingw64/bin/make.exe ] && ln -s /mingw64/bin/mingw32-make.exe /mingw64/bin/make.exe
 
-            make -f Makefile
+            make
           "
           ls
           pwd
