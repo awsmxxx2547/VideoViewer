@@ -79,7 +79,7 @@ jobs:
       - name: Build project (Windows)
         shell: cmd
         run: |
-          "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
+          "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c '
           export MSYSTEM=MINGW64
           source /etc/profile
           gcc --version
@@ -89,4 +89,4 @@ jobs:
           [ ! -f /mingw64/bin/make.exe ] && ln -s /mingw64/bin/mingw32-make.exe /mingw64/bin/make.exe
           make all
           ls build/bin/
-          "
+          '
