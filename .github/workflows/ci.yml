@@ -46,13 +46,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get Makefile hash
+        id: makefile-hash
+        run: |
+          echo "hash=$(git hash-object Makefile 2>/dev/null || echo 'no-makefile')" >> $GITHUB_OUTPUT
+
       - name: Cache MSYS2 packages
         uses: actions/cache@v3
         with:
           path: |
             ${{ env.MSYS2_ROOT }}/var/cache/pacman/pkg
             ${{ env.MSYS2_ROOT }}/mingw64
-          key: ${{ env.MSYS2_CACHE_KEY }}
+          key: msys2-pkgs-${{ runner.os }}-${{ steps.makefile-hash.outputs.hash }}-v1
 
       - name: Install dependencies (Windows)
         run: |
@@ -63,20 +68,20 @@ jobs:
           C:\tools\msys64\usr\bin\bash.exe -l -c "
           pacman --noconfirm -Syuu || echo 'MSYS2 update completed (session terminated)' >&2
           "
-          exit 0  # Always succeed this step
+          exit 0
 
-      - name: Install packages in fresh session
+      - name: Install packages (cache miss only)
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "
-            if [ '${{ steps.cache.outputs.cache-hit }}' != 'true' ]; then
-              pacman -S --needed --noconfirm \
+            pacman -S --needed --noconfirm \
               mingw-w64-x86_64-make \
               mingw-w64-x86_64-gcc \
               mingw-w64-x86_64-SDL2 \
               mingw-w64-x86_64-pkg-config \
               mingw-w64-x86_64-ffmpeg
-            fi
           "
+
       - name: Build project
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "
