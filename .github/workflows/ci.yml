@@ -60,14 +60,12 @@ jobs:
             msys2-${{ runner.os }}-
 
       - name: Show cache status
-        shell: bash
         run: |
           echo "Cache hit: ${{ steps.msys2-cache.outputs.cache-hit }}"
           echo "Cache key: ${{ steps.msys2-cache.outputs.cache-primary-key }}"
 
       - name: Setup MSYS2 (cache miss only)
         if: steps.msys2-cache.outputs.cache-hit != 'true'
-        shell: powershell
         run: |
           choco install msys2 --params="/NoUpdate" -y
           Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
@@ -79,7 +77,7 @@ jobs:
           exit 0
 
       - name: Install packages (cache miss only)
-        shell: powershell
+        shell: cmd
         if: steps.msys2-cache.outputs.cache-hit != 'true'
         run: |
           call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
@@ -92,7 +90,7 @@ jobs:
           "
 
       - name: Build project
-        shell: powershell
+        shell: cmd
         run: |
           & "$env:MSYS2_ROOT\usr\bin\bash.exe" -lc @"
             # Setup environment
