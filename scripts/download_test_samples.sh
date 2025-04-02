@@ -4,8 +4,8 @@ SAMPLES_DIR="tests/integration/test_samples/"
 mkdir -p "$SAMPLES_DIR"
 
 declare -A sample_videos=(
-  ["sample1.mp4"]="https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4"
-  ["sample2.mp4"]="https://sample-videos.com/video321/mp4/480/big_buck_bunny_480p_1mb.mp4"
+  ["sample1.mp4"]="https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
+  ["sample2.mp4"]="https://sample-videos.com/video321/mp4/480/big_buck_bunny_480p_1mb.mp4",
   ["sample3.mp4"]="https://sample-videos.com/video321/mp4/360/big_buck_bunny_360p_1mb.mp4"
 )
 
