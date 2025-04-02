@@ -53,10 +53,9 @@ jobs:
         id: msys2-pacman-cache
         with:
           path: C:\msys64\var\cache\pacman\pkg
-        key: msys2-pacman-${{ runner.os }}-${{ env.CACHE_VERSION }}
-        restore-keys: |
-          msys2-pacman-${{ runner.os }}-
-
+          key: msys2-pacman-${{ runner.os }}-${{ env.CACHE_VERSION }}
+          restore-keys: |
+            msys2-pacman-${{ runner.os }}-
       - name: Show pacman cache status
         if: always() # Run even if previous steps fail
         shell: bash
@@ -64,18 +63,12 @@ jobs:
           echo "Cache hit: ${{ steps.msys2-pacman-cache.outputs.cache-hit }}"
           echo "Cache key: ${{ steps.msys2-pacman-cache.outputs.cache-primary-key }}" # Note: output name changed in v4
 
-          # Always run setup-msys2 to configure the environment (PATH etc.)
-          # It will use the cached packages if available, making installation fast
       - name: Setup MSYS2 environment
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64 # Specify the desired environment (default is MINGW64)
           update: true    # Update the MSYS2 base packages first
           install: ${{ env.PACKAGE_LIST }} # Install desired packages ('--needed' is implied)
-          # The action automatically adds the correct bin dirs (e.g., C:\msys64\mingw64\bin) to PATH
-
-          # Use the msys2 shell provided by setup-msys2 for subsequent steps
-          # This ensures PATH and other environment variables are set correctly
       - name: Build project (Windows)
         shell: msys2 {0} # Use the msys2 shell provided by the setup action
         run: |
