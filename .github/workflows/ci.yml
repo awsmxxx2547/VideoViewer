@@ -81,4 +81,5 @@ jobs:
           call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
                 export MSYSTEM=MINGW64
                 source /etc/profile
-                uname
+                uname -s
+                "
