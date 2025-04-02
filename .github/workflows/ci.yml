@@ -13,32 +13,31 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev \
-            libswscale-dev libswresample-dev libsdl2-dev
+          libswscale-dev libswresample-dev libsdl2-dev
 
       - name: Build app (Linux)
         run: |
           make
           mkdir -p artifacts
           cp build/bin/video_viewer artifacts/
-          tar -czvf build_artifacts.tar.gz -C artifacts .
-          cp ./build_artifacts.tar.gz ../
 
-      - name: List files before extracting
-        run: ls -alh
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-viewer-build
+          path: artifacts/
+          retention-days: 7
 
-      - name: Push Build Artifacts to `build` Branch
+      - name: Create release tarball
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions@github.com"
-          git fetch origin build || git checkout --orphan build
-          git checkout -B build origin/build
-          rm -rf *
-          ls -alh
-          tar -xzf ../build_artifacts.tar.gz
-          git add .
-          git commit -m "Auto-build: $(date)"
-          git push https://x-access-token:${{ secrets.BUILD_SECRET }}@github.com/${{ github.repository }}.git build --force
-          rm -rf ../build_artifacts.tar.gz
+          tar -czvf video_viewer_build.tar.gz -C artifacts .
+
+      - name: Upload release tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-viewer-tarball
+          path: video_viewer_build.tar.gz
+          retention-days: 7
 
   macos-build:
     runs-on: macos-latest
