@@ -6,7 +6,6 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -20,4 +19,4 @@ jobs:
       - name: Run clang-tidy
         run: |
           clang-tidy --version
-          clang-tidy src/*.c -- -Iinclude -header-filter=.* -system-headers
+          clang-tidy src/*.c -- -Iinclude
