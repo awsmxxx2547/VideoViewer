@@ -7,18 +7,18 @@ int init_video(const char *filename, AVFormatContext **format_context,
 {
     *format_context = avformat_alloc_context();
     if (!*format_context) {
-        fprintf(stderr, "Could not allocate format context\n");
+        printf("Could not allocate format context\n");
         return -1;
     }
 
     if (avformat_open_input(format_context, filename, NULL, NULL) != 0) {
-        fprintf(stderr, "Could not open input file '%s'\n", filename);
+        printf("Could not open input file '%s'\n", filename);
         avformat_free_context(*format_context);
         return -1;
     }
 
     if (avformat_find_stream_info(*format_context, NULL) < 0) {
-        fprintf(stderr, "Could not find stream information\n");
+        printf("Could not find stream information\n");
         avformat_close_input(format_context);
         return -1;
     }
@@ -35,7 +35,7 @@ int init_video(const char *filename, AVFormatContext **format_context,
     }
 
     if (*video_stream_index == -1) {
-        fprintf(stderr, "Could not find video stream\n");
+        printf("Could not find video stream\n");
         avformat_close_input(format_context);
         return -1;
     }
@@ -43,27 +43,27 @@ int init_video(const char *filename, AVFormatContext **format_context,
     AVStream *video_stream = (*format_context)->streams[*video_stream_index];
     const AVCodec *video_codec = avcodec_find_decoder(video_stream->codecpar->codec_id);
     if (!video_codec) {
-        fprintf(stderr, "Unsupported video codec\n");
+        printf("Unsupported video codec\n");
         avformat_close_input(format_context);
         return -1;
     }
 
     *video_codec_context = avcodec_alloc_context3(video_codec);
     if (!*video_codec_context) {
-        fprintf(stderr, "Could not allocate video codec context\n");
+        printf("Could not allocate video codec context\n");
         avformat_close_input(format_context);
         return -1;
     }
 
     if (avcodec_parameters_to_context(*video_codec_context, video_stream->codecpar) < 0) {
-        fprintf(stderr, "Could not copy video codec parameters\n");
+        printf("Could not copy video codec parameters\n");
         avcodec_free_context(video_codec_context);
         avformat_close_input(format_context);
         return -1;
     }
 
     if (avcodec_open2(*video_codec_context, video_codec, NULL) < 0) {
-        fprintf(stderr, "Could not open video codec\n");
+        printf("Could not open video codec\n");
         avcodec_free_context(video_codec_context);
         avformat_close_input(format_context);
         return -1;
@@ -73,19 +73,19 @@ int init_video(const char *filename, AVFormatContext **format_context,
         AVStream *audio_stream = (*format_context)->streams[*audio_stream_index];
         const AVCodec *audio_codec = avcodec_find_decoder(audio_stream->codecpar->codec_id);
         if (!audio_codec) {
-            fprintf(stderr, "Unsupported audio codec - continuing without audio\n");
+            printf("Unsupported audio codec - continuing without audio\n");
             *audio_stream_index = -1;
         } else {
             *audio_codec_context = avcodec_alloc_context3(audio_codec);
             if (!*audio_codec_context) {
-                fprintf(stderr, "Could not allocate audio codec context - continuing without audio\n");
+                printf("Could not allocate audio codec context - continuing without audio\n");
                 *audio_stream_index = -1;
             } else if (avcodec_parameters_to_context(*audio_codec_context, audio_stream->codecpar) < 0) {
-                fprintf(stderr, "Could not copy audio codec parameters - continuing without audio\n");
+                printf("Could not copy audio codec parameters - continuing without audio\n");
                 avcodec_free_context(audio_codec_context);
                 *audio_stream_index = -1;
             } else if (avcodec_open2(*audio_codec_context, audio_codec, NULL) < 0) {
-                fprintf(stderr, "Could not open audio codec - continuing without audio\n");
+                printf("Could not open audio codec - continuing without audio\n");
                 avcodec_free_context(audio_codec_context);
                 *audio_stream_index = -1;
             }
@@ -108,7 +108,7 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
     int resampled_linesize = 0;
 
     if (!packet || !video_frame || !audio_frame) {
-        fprintf(stderr, "Could not allocate frames/packet\n");
+        printf("Could not allocate frames/packet\n");
         goto cleanup;
     }
 
@@ -117,7 +117,7 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
     if (audio_codec_ctx && audio_stream_idx != -1) {
         swr_ctx = swr_alloc();
         if (!swr_ctx) {
-            fprintf(stderr, "Could not allocate resampler\n");
+            printf("Could not allocate resampler\n");
             goto cleanup;
         }
 
@@ -132,14 +132,14 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
                               audio_codec_ctx->sample_fmt,
                               audio_codec_ctx->sample_rate,
                               0, NULL) < 0 || swr_init(swr_ctx) < 0) {
-            fprintf(stderr, "Failed to initialize resampler\n");
+            printf("Failed to initialize resampler\n");
             swr_free(&swr_ctx);
             swr_ctx = NULL;
             audio_stream_idx = -1;
         } else if (av_samples_alloc_array_and_samples(&resampled_data, &resampled_linesize,
                                                    audio_spec.channels,
                                                    4096, AV_SAMPLE_FMT_S16, 0) < 0) {
-            fprintf(stderr, "Could not allocate samples\n");
+            printf("Could not allocate samples\n");
             swr_free(&swr_ctx);
             swr_ctx = NULL;
             resampled_data = NULL;
@@ -171,7 +171,7 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
         if (packet->stream_index == video_stream_idx) {
             // Video packet processing
             if (avcodec_send_packet(video_codec_ctx, packet) < 0) {
-                fprintf(stderr, "Error sending video packet\n");
+                printf("Error sending video packet\n");
                 continue;
             }
 
@@ -192,7 +192,7 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
         else if (packet->stream_index == audio_stream_idx && audio_codec_ctx) {
             // Audio packet processing
             if (avcodec_send_packet(audio_codec_ctx, packet) < 0) {
-                fprintf(stderr, "Error sending audio packet\n");
+                printf("Error sending audio packet\n");
                 continue;
             }
 
@@ -203,7 +203,7 @@ void play_video(AVFormatContext *format_ctx, AVCodecContext *video_codec_ctx,
                         if (av_samples_alloc_array_and_samples(&resampled_data, &resampled_linesize,
                                                              audio_spec.channels, out_samples,
                                                              AV_SAMPLE_FMT_S16, 0) < 0) {
-                            fprintf(stderr, "Could not allocate samples\n");
+                            printf("Could not allocate samples\n");
                             continue;
                         }
 
