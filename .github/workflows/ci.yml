@@ -30,14 +30,7 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git fetch origin build || git checkout --orphan build
           git checkout -B build origin/build
-          rm -rf *
           ls -alh
-          ls .git/ -alh
-          ls ../ -alh
-          ls ../../ -alh
-          ls ../VideoViewer -alh
-          ls ../../../ -alh
-          ls ../../../../ -alh
           tar -xzf build_artifacts.tar.gz
           git add .
           git commit -m "Auto-build: $(date)"
