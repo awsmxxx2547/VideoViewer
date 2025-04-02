@@ -84,11 +84,11 @@ jobs:
       - name: Build project
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "
-          export MSYSTEM=MINGW64 \
-          source /etc/profile \
-          echo "Current shell: $SHELL" \
-          gcc --version \
-          pkg-config --version \
-          uname \
-          mingw32-make all \
+          export MSYSTEM=MINGW64 
+          source \etc\profile 
+          echo "Current shell: $SHELL" 
+          gcc --version 
+          pkg-config --version 
+          uname 
+          mingw32-make all 
           "
