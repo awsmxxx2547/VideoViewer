@@ -2,10 +2,6 @@ name: CI/CD
 
 on: [push, pull_request]
 
-env:
-  MSYS2_CACHE_KEY: msys2-packages-${{ hashFiles('**/Makefile') }}-v1
-  MSYS2_ROOT: C:/tools/msys64
-
 jobs:
   linux-build:
     runs-on: ubuntu-latest
@@ -44,6 +40,8 @@ jobs:
         run: make
   windows-build:
     runs-on: windows-latest
+    env:
+      MSYS2_ROOT: C:/tools/msys64
 
     steps:
       - uses: actions/checkout@v4
