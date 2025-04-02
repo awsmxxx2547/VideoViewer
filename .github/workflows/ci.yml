@@ -44,22 +44,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
         with:
-          platform: x64
+          msystem: MINGW64
+          install: mingw-w64-x86_64-make mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-pkg-config mingw-w64-x86_64-ffmpeg
+          update: true
 
-      - name: Install packages in fresh session
-        shell: pwsh
+      - name: Verify installation
+        shell: msys2 {0}
         run: |
-          pacman -S --needed --noconfirm \
-          mingw-w64-x86_64-make \
-          mingw-w64-x86_64-gcc \
-          mingw-w64-x86_64-SDL2 \
-          mingw-w64-x86_64-pkg-config \
-          mingw-w64-x86_64-ffmpeg
-
-      - name: Build project
-        run: |
-          gcc --version 
-          pkg-config --version 
+          gcc --version
+          pkg-config --version
