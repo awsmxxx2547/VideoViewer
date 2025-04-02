@@ -1,7 +1,6 @@
 #ifndef VIDEO_H
 #define VIDEO_H
 
-#define __STDC_WANT_LIB_EXT1__ 1
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libavutil/avutil.h>
