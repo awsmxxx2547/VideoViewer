@@ -60,12 +60,14 @@ jobs:
             msys2-${{ runner.os }}-
 
       - name: Show cache status
+        shell: bash
         run: |
           echo "Cache hit: ${{ steps.msys2-cache.outputs.cache-hit }}"
           echo "Cache key: ${{ steps.msys2-cache.outputs.cache-primary-key }}"
 
       - name: Setup MSYS2 (cache miss only)
         if: steps.msys2-cache.outputs.cache-hit != 'true'
+        shell: powershell
         run: |
           choco install msys2 --params="/NoUpdate" -y
           Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
@@ -77,7 +79,7 @@ jobs:
           exit 0
 
       - name: Install packages (cache miss only)
-        shell: cmd
+        shell: powershell
         if: steps.msys2-cache.outputs.cache-hit != 'true'
         run: |
           call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
@@ -90,14 +92,38 @@ jobs:
           "
 
       - name: Build project
-        shell: cmd
+        shell: powershell
         run: |
-          call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
+          & "$env:MSYS2_ROOT\usr\bin\bash.exe" -lc @"
+            # Setup environment
             export MSYSTEM=MINGW64
             source /etc/profile
-            [ ! -f /mingw64/bin/make.exe ] && ln -s /mingw64/bin/mingw32-make.exe /mingw64/bin/make.exe
-            gcc -Wall -Wextra -g -I./include -I/usr/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/main.c -o build/obj/main.o
-            gcc -Wall -Wextra -g -I./include -I/usr/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/sdl.c -o build/obj/sdl.o
-            gcc -Wall -Wextra -g -I./include -I/usr/include/SDL2 -D_GNU_SOURCE=1 -D_REENTRANT -c src/video.c -o build/obj/video.o
-            gcc build/obj/main.o build/obj/sdl.o build/obj/video.o -o build/bin/video_viewer.exe -lavformat -lavcodec -lswscale -lswresample -lavutil -lSDL2
-          "
+            
+            # Create build directories
+            mkdir -p build/obj build/bin
+            
+            # Compile with proper include paths
+            gcc -Wall -Wextra -g \
+              -I./include \
+              -I/mingw64/include/SDL2 \
+              -D_GNU_SOURCE=1 -D_REENTRANT \
+              -c src/main.c -o build/obj/main.o
+              
+            gcc -Wall -Wextra -g \
+              -I./include \
+              -I/mingw64/include/SDL2 \
+              -D_GNU_SOURCE=1 -D_REENTRANT \
+              -c src/sdl.c -o build/obj/sdl.o
+              
+            gcc -Wall -Wextra -g \
+              -I./include \
+              -I/mingw64/include/SDL2 \
+              -D_GNU_SOURCE=1 -D_REENTRANT \
+              -c src/video.c -o build/obj/video.o
+            
+            # Link with proper library paths
+            gcc build/obj/main.o build/obj/sdl.o build/obj/video.o \
+              -L/mingw64/lib \
+              -o build/bin/video_viewer.exe \
+              -lavformat -lavcodec -lswscale -lswresample -lavutil -lSDL2
+          "@
