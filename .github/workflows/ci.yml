@@ -31,6 +31,7 @@ jobs:
           git fetch origin build || git checkout --orphan build
           git checkout -B build origin/build
           rm -rf *
+          ls -alh
           tar -xzf build_artifacts.tar.gz
           git add .
           git commit -m "Auto-build: $(date)"
