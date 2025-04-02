@@ -71,16 +71,15 @@ jobs:
           Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
           refreshenv
 
-          call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
+          "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
           pacman --noconfirm -Syuu || echo 'MSYS2 update completed (session terminated)' >&2
           "
           exit 0
 
       - name: Install packages (cache miss only)
-        shell: cmd
         if: steps.msys2-cache.outputs.cache-hit != 'true'
         run: |
-          call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
+          "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "
             pacman -S --needed --noconfirm \
               mingw-w64-x86_64-make \
               mingw-w64-x86_64-gcc \
@@ -95,5 +94,5 @@ jobs:
           call "%MSYS2_ROOT%\usr\bin\bash.exe" --login -c "set -x && \
                 export MSYSTEM=MINGW64 && \
                 source /etc/profile && \
-                make
+                uname
                 "
