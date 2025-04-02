@@ -44,51 +44,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies (Windows)
-        run: |
-          choco install msys2 --params="/NoUpdate" -y
-          Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-          refreshenv
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x64
 
-      - name: First-stage update (allow restart)
-        run: |
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
-          pacman --noconfirm -Syuu || echo 'MSYS2 update completed (session terminated)' >&2
-          "
-          exit 0  # Always succeed this step
       - name: Install packages in fresh session
+        shell: pwsh
         run: |
-          # Install ONLY the essential packages
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
-            pacman -S --needed --noconfirm \
-              mingw-w64-x86_64-make \
-              mingw-w64-x86_64-gcc \
-              mingw-w64-x86_64-SDL2 \
-              mingw-w64-x86_64-pkg-config \
-              mingw-w64-x86_64-ffmpeg
-          "
-
-      - name: Verify installation
-        run: |
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
-            echo '=== Installed packages ==='
-            pacman -Q | grep mingw-w64-x86_64
-            
-            echo '=== Files in /mingw64/bin ==='
-            ls /mingw64/bin/make.exe /mingw64/bin/gcc.exe
-            
-            echo '=== Make version ==='
-            /mingw64/bin/make.exe --version || echo 'Make not found'
-          "
+          pacman -S --needed --noconfirm \
+          mingw-w64-x86_64-make \
+          mingw-w64-x86_64-gcc \
+          mingw-w64-x86_64-SDL2 \
+          mingw-w64-x86_64-pkg-config \
+          mingw-w64-x86_64-ffmpeg
 
       - name: Build project
         run: |
-          C:\tools\msys64\usr\bin\bash.exe -l -c "
-          export MSYSTEM=MINGW64 
-          source \etc\profile 
-          echo "Current shell: $SHELL" 
           gcc --version 
           pkg-config --version 
-          uname 
-          mingw32-make all 
-          "
