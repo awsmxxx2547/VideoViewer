@@ -66,6 +66,7 @@ jobs:
 
       - name: Setup MSYS2 (cache miss only)
         if: steps.msys2-cache.outputs.cache-hit != 'true'
+        shell: bash
         run: |
           choco install msys2 --params="/NoUpdate" -y
           Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
@@ -78,6 +79,7 @@ jobs:
 
       - name: Install packages (cache miss only)
         if: steps.msys2-cache.outputs.cache-hit != 'true'
+        shell: bash
         run: |
           C:\tools\msys64\usr\bin\bash.exe -l -c "
             pacman -S --needed --noconfirm \
