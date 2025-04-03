@@ -3,33 +3,33 @@ name: Build with Local Libs
 on: [ push ]
 
 jobs:
-  build: 
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+  libs-build: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y libavformat-dev libavcodec-dev libavutil-dev \
-        libswscale-dev libswresample-dev libsdl2-dev
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libavformat-dev libavcodec-dev libavutil-dev \
+          libswscale-dev libswresample-dev libsdl2-dev
 
-    - name: Build video_viewer
-      run: |
-        gcc -o video_viewer src/*.c \
-        -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
-        -Wl,-rpath=\$ORIGIN/libs
+      - name: Build video_viewer
+        run: |
+          gcc -o video_viewer src/*.c \
+          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
+          -Wl,-rpath=\$ORIGIN/libs
 
-    - name: Create libs directory and copy shared libraries
-      run: |
-        mkdir -p libs
-        ldd video_viewer | awk '{print $3}' | grep "/lib" | xargs -I{} cp {} libs/
+      - name: Create libs directory and copy shared libraries
+        run: |
+          mkdir -p libs
+          ldd video_viewer | awk '{print $3}' | grep "/lib" | xargs -I{} cp {} libs/
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: video_viewer_with_libs
-        path: |
-          video_viewer
-          libs/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video_viewer_with_libs
+          path: |
+            video_viewer
+            libs/
