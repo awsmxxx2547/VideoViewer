@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev
 
-      - name: Run INTEGRATION tests
+      - name: Run UNIT tests
         run: |
           export SDL_AUDIODRIVER=dummy
           make
