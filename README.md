@@ -55,7 +55,7 @@ _branches:_
 - master --> Contains README.md, LICENSE, and other documentation files.
 - release --> This branch holds the full program that is ready for release.
 - feature --> These branches are used to develop new features or enhancements. Once a feature is complete, it gets merged into the release or master branch.
-- drafts --> work-in-progress branch where experimental features or ideas are tested before being moved to a feature branch.
+- draft --> work-in-progress branch where experimental features or ideas are tested before being moved to a feature branch.
 
 ### Additional words
 
