@@ -54,3 +54,77 @@ jobs:
         with:
           name: video_viewer_command
           path: video_viewer.tar.gz
+
+  windows-libs:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-pkg-config mingw-w64-x86_64-ffmpeg
+          update: true
+
+      - name: Build video_viewer.exe
+        shell: msys2 {0}
+        run: |
+          mkdir -p libs
+          gcc -o video_viewer.exe src/*.c \
+          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2
+
+      - name: Gather DLL dependencies
+        shell: powershell
+        run: |
+      - name: Upload art          # Create libs directory if not exists
+        run: |
+          if (!(Test-Path -Path "libs")) {
+              New-Item -ItemType Directory -Path "libs" | Out-Null
+          }
+          
+          # Find all required DLLs
+          $dlls = (objdump -p video_viewer.bin.exe | Select-String -Pattern "DLL Name: .*\.dll" | ForEach-Object { $_.ToString().Split(":")[1].Trim() })
+          
+          $searchPaths = @(
+              "$env:MSYS2_PATH\mingw64\bin",
+              "$env:MSYS2_PATH\usr\bin",
+              "C:\tools\ffmpeg\bin",
+              "C:\tools\sdl2\lib\x64"
+          )
+          
+          foreach ($dll in $dlls) {
+              foreach ($path in $searchPaths) {
+                  $dllPath = Join-Path -Path $path -ChildPath $dll
+                  if (Test-Path -Path $dllPath) {
+                      Copy-Item -Path $dllPath -Destination "libs\" -Force
+                      break
+                  }
+              }
+          }
+        name: Create Windows wrapper
+        shell: powershell
+        run: |
+          # Create a batch file that will be our main executable
+          @"
+          @echo off
+          setlocal
+          set SCRIPT_DIR=%~dp0
+          set PATH=%SCRIPT_DIR%libs;%PATH%
+          "%SCRIPT_DIR%video_viewer.bin.exe" %*
+          endlocal
+          "@ | Out-File -FilePath "video_viewer.bat" -Encoding ASCII
+
+          # Create directory structure
+          New-Item -ItemType Directory -Path "video_viewer_pkg" | Out-Null
+          Move-Item -Path "video_viewer.bin.exe", "video_viewer.bat", "libs" -Destination "video_viewer_pkg"
+
+          # Create archive
+          Compress-Archive -Path "video_viewer_pkg" -DestinationPath "video_viewer_windows.zip" -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video_viewer_windows
+          path: video_viewer_windows.zip
