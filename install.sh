@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./scripts/install_dependencies.sh
+source ./install_dependencies.sh
 
 # Colors
 GREEN='\033[0;32m'

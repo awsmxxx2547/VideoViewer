@@ -26,6 +26,7 @@ jobs:
           cp VERSION_LIST release/linux/
           cp README.md release/linux/
           cp install.sh release/linux/
+          cp ./scripts/install_dependencies.sh release/linux
 
       - name: Package Linux release
         run: |
