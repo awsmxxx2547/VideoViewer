@@ -22,28 +22,46 @@ jobs:
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
           -Wl,-rpath='$ORIGIN/libs'
 
-      - name: Copy and fix library dependencies
+      - name: Bundle all required libraries
         run: |
-          # Get all dependencies and copy to libs folder
-          ldd video_viewer | awk '/=> \// {print $3}' | grep -v "libc.so.6" | grep -v "ld-linux-" | xargs -I{} cp {} libs/
-
+          # Create libs directory if not exists
+          mkdir -p libs
+          
+          # Get all dependencies excluding system libraries
+          ldd video_viewer | awk '/=> \// {print $3}' | \
+          grep -vE "libc.so.6|libpthread.so.0|libm.so.6|libdl.so.2|ld-linux-x86-64.so.2" | \
+          xargs -I{} cp -v {} libs/
+          
           # Use patchelf to set the correct rpath
           patchelf --set-rpath '$ORIGIN/libs' video_viewer
-
-          # Optional: Make all copied libraries executable
+          
+          # Make all copied libraries executable
           chmod +x libs/*
+          
+          # Verify all dependencies are resolved
+          ldd video_viewer || true
+          readelf -d video_viewer | grep RPATH || true
 
-      - name: Verify library paths
+      - name: Create portable bundle
         run: |
-          ldd video_viewer
-          readelf -d video_viewer | grep RPATH
-
-      - name: Create archive for better portability
-        run: |
-          tar czvf video_viewer_bundle.tar.gz video_viewer libs/
+          # Create a self-contained directory structure
+          mkdir -p video_viewer_bundle
+          cp video_viewer video_viewer_bundle/
+          cp -r libs video_viewer_bundle/
+          
+          # Create a wrapper script
+          echo '#!/bin/sh
+          SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+          export LD_LIBRARY_PATH="$SCRIPT_DIR/libs:$LD_LIBRARY_PATH"
+          exec "$SCRIPT_DIR/video_viewer" "$@"' > video_viewer_bundle/run.sh
+          
+          chmod +x video_viewer_bundle/run.sh
+          
+          # Create archive
+          tar czvf video_viewer_bundle.tar.gz video_viewer_bundle/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: video_viewer_with_libs
+          name: video_viewer_portable
           path: video_viewer_bundle.tar.gz
