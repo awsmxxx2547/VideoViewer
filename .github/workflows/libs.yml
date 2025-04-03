@@ -73,13 +73,12 @@ jobs:
         run: |
           mkdir -p libs
           gcc -o video_viewer.bin.exe src/*.c \
-          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 -lmingw32
+          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
+          -lmingw32 -mwindows -Wl,-subsystem,console
 
 
       - name: Gather DLL dependencies
         shell: powershell
-        run: |
-      - name: Upload art          # Create libs directory if not exists
         run: |
           if (!(Test-Path -Path "libs")) {
               New-Item -ItemType Directory -Path "libs" | Out-Null
@@ -116,16 +115,16 @@ jobs:
           set PATH=%SCRIPT_DIR%libs;%PATH%
           "%SCRIPT_DIR%video_viewer.bin.exe" %*
           endlocal
-          "@ | Out-File -FilePath "video_viewer.bat" -Encoding ASCII
+          "@ | Out-File -FilePath "video_viewer.cmd" -Encoding ASCII
 
           # Create directory structure
           New-Item -ItemType Directory -Path "video_viewer_pkg" | Out-Null
-          Move-Item -Path "video_viewer.bin.exe", "video_viewer.bat", "libs" -Destination "video_viewer_pkg"
+          Move-Item -Path "video_viewer.bin.exe", "video_viewer.cmd", "libs" -Destination "video_viewer_pkg"
 
           # Create archive
           Compress-Archive -Path "video_viewer_pkg" -DestinationPath "video_viewer_windows.zip" -Force
 
-      - name: Upload artifact
+      - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: video_viewer_windows
