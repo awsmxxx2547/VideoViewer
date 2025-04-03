@@ -130,6 +130,6 @@ jobs:
           tag_name: ${{ env.TAG_VERSION }}
           name: "Video Viewer ${{ env.version }}"
           body: |
-            $(cat .github/release-body.md)
+            $(cat ./release-body.md)
           files: |
             artifacts/video_viewer_command/video_viewer.tar.gz
