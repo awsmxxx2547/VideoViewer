@@ -1,4 +1,4 @@
-name: Build with Local Libs
+name: libs
 
 on: [ push ]
 
@@ -74,7 +74,7 @@ jobs:
           mkdir -p libs
           gcc -o video_viewer.bin.exe src/*.c \
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
-          -static-libgcc -Wl,-rpath='$ORIGIN/libs'
+          -rpath='$ORIGIN/libs'
 
       - name: Gather DLL dependencies
         shell: powershell
