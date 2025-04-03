@@ -103,7 +103,8 @@ jobs:
                   }
               }
           }
-        name: Create Windows wrapper
+
+      - name: Create Windows wrapper
         shell: powershell
         run: |
           # Create a batch file that will be our main executable
