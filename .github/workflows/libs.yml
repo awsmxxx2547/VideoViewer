@@ -13,55 +13,44 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y libavformat-dev libavcodec-dev libavutil-dev \
-          libswscale-dev libswresample-dev libsdl2-dev
+          libswscale-dev libswresample-dev libsdl2-dev patchelf
 
       - name: Build video_viewer
         run: |
           mkdir -p libs
-          gcc -o video_viewer src/*.c \
+          gcc -o video_viewer.bin src/*.c \
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
           -Wl,-rpath='$ORIGIN/libs'
 
       - name: Bundle all required libraries
         run: |
-          # Create libs directory if not exists
           mkdir -p libs
-          
-          # Get all dependencies excluding system libraries
-          ldd video_viewer | awk '/=> \// {print $3}' | \
+          ldd video_viewer.bin | awk '/=> \// {print $3}' | \
           grep -vE "libc.so.6|libpthread.so.0|libm.so.6|libdl.so.2|ld-linux-x86-64.so.2" | \
           xargs -I{} cp -v {} libs/
           
-          # Use patchelf to set the correct rpath
-          patchelf --set-rpath '$ORIGIN/libs' video_viewer
-          
-          # Make all copied libraries executable
+          patchelf --set-rpath '$ORIGIN/libs' video_viewer.bin
           chmod +x libs/*
-          
-          # Verify all dependencies are resolved
-          ldd video_viewer || true
-          readelf -d video_viewer | grep RPATH || true
 
-      - name: Create portable bundle
+      - name: Create portable command
         run: |
-          # Create a self-contained directory structure
-          mkdir -p video_viewer_bundle
-          cp video_viewer video_viewer_bundle/
-          cp -r libs video_viewer_bundle/
-          
-          # Create a wrapper script
+          # Create wrapper script that will be the main executable
           echo '#!/bin/sh
           SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
           export LD_LIBRARY_PATH="$SCRIPT_DIR/libs:$LD_LIBRARY_PATH"
-          exec "$SCRIPT_DIR/video_viewer" "$@"' > video_viewer_bundle/run.sh
+          exec "$SCRIPT_DIR/video_viewer.bin" "$@"' > video_viewer
           
-          chmod +x video_viewer_bundle/run.sh
+          chmod +x video_viewer
+          
+          # Create directory structure
+          mkdir -p video_viewer_pkg
+          mv video_viewer video_viewer.bin libs video_viewer_pkg/
           
           # Create archive
-          tar czvf video_viewer_bundle.tar.gz video_viewer_bundle/
+          tar czvf video_viewer.tar.gz video_viewer_pkg/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: video_viewer_portable
-          path: video_viewer_bundle.tar.gz
+          name: video_viewer_command
+          path: video_viewer.tar.gz
