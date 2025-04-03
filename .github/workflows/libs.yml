@@ -72,7 +72,7 @@ jobs:
         shell: msys2 {0}
         run: |
           mkdir -p libs
-          gcc -o video_viewer.exe src/*.c \
+          gcc -o video_viewer.bin.exe src/*.c \
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2
 
       - name: Gather DLL dependencies
