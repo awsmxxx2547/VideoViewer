@@ -97,7 +97,7 @@ jobs:
         with:
           name: video_viewer_command
           path: video_viewer.tar.gz
-
+          
   create-release:
     needs: [linux-release]
     runs-on: ubuntu-latest
@@ -118,10 +118,11 @@ jobs:
       - name: Debug Artifact Paths
         run: ls -R artifacts
 
-      - name: Read release body from markdown file
+      - name: Set release body
         id: release-body
         run: |
-          cat .github/release-body.md
+          RELEASE_BODY=$(cat .github/release-body.md | sed 's/$/\\n/' | tr -d '\n')
+          echo "body=$RELEASE_BODY" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -129,7 +130,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.TAG_VERSION }}
           name: "Video Viewer ${{ env.version }}"
-          body: |
-            $(cat ./release-body.md)
+          body: ${{ env.body }}
           files: |
             artifacts/video_viewer_command/video_viewer.tar.gz
