@@ -1,12 +1,10 @@
 name: Coverage Report
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  branches:
+    - master
+  schedule:
+    - cron: '0 0 * * *'  # This runs the workflow every day at midnight UTC
 
 jobs:
   coverage:
