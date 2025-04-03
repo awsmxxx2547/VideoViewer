@@ -38,43 +38,43 @@ jobs:
           name: video-viewer-linux
           path: video_viewer_linux.tar.gz
 
-  windows-release:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          install: >-
-            mingw-w64-x86_64-make 
-            mingw-w64-x86_64-gcc 
-            mingw-w64-x86_64-SDL2 
-            mingw-w64-x86_64-pkg-config 
-            mingw-w64-x86_64-ffmpeg
-          update: true
-
-      - name: Build
-        shell: msys2 {0}
-        run: |
-          mingw32-make all
-          mkdir -p release/windows
-          cp build/bin/video_viewer.exe release/windows/
-          cp -r include release/windows/
-          cp VERSION_LIST release/windows/
-          cp README.md release/windows/
-
-      - name: Package Windows release
-        shell: cmd
-        run: |
-          7z a video_viewer_windows.zip release\windows\*
-
-      - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: video-viewer-windows
-          path: video_viewer_windows.zip
+  # windows-release:
+    # runs-on: windows-latest
+    # steps:
+      # - uses: actions/checkout@v4
+# 
+      # - name: Set up MSYS2
+        # uses: msys2/setup-msys2@v2
+        # with:
+          # msystem: MINGW64
+          # install: >-
+            # mingw-w64-x86_64-make 
+            # mingw-w64-x86_64-gcc 
+            # mingw-w64-x86_64-SDL2 
+            # mingw-w64-x86_64-pkg-config 
+            # mingw-w64-x86_64-ffmpeg
+          # update: true
+# 
+      # - name: Build
+        # shell: msys2 {0}
+        # run: |
+          # mingw32-make all
+          # mkdir -p release/windows
+          # cp build/bin/video_viewer.exe release/windows/
+          # cp -r include release/windows/
+          # cp VERSION_LIST release/windows/
+          # cp README.md release/windows/
+# 
+      # - name: Package Windows release
+        # shell: cmd
+        # run: |
+          # 7z a video_viewer_windows.zip release\windows\*
+# 
+      # - name: Upload Windows artifact
+        # uses: actions/upload-artifact@v4
+        # with:
+          # name: video-viewer-windows
+          # path: video_viewer_windows.zip
 
   create-release:
     needs: [linux-release, windows-release]
@@ -105,4 +105,4 @@ jobs:
             - Version history in VERSION_LIST
           files: |
             artifacts/video-viewer-linux/video_viewer_linux.tar.gz
-            artifacts/video-viewer-windows/video_viewer_windows.zip
+#artifacts/video-viewer-windows/video_viewer_windows.zip

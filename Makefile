@@ -141,9 +141,12 @@ t-coverage: clean test
 # ========================
 .PHONY: version version-major version-minor version-patch
 
-VERSION_FILE := VERSION
+VERSION_FILE := ./VERSION
+v := $(shell head -n 1 $(VERSION_FILE))
 
 # MAJOR.MINOR.PATCH -- semantic versioning
+release:
+	@git tag v$(v) && git push --tags
 
 # Default version bump (patch)
 version: version-patch
