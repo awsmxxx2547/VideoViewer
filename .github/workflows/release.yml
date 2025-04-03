@@ -93,9 +93,13 @@ jobs:
           echo "TAG_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
+      - name: Debug Artifact Paths
+        run: ls -R artifacts
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.TAG_VERSION }}
           name: "Video Viewer ${{ env.version }}"
           body: |
