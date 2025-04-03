@@ -118,6 +118,11 @@ jobs:
       - name: Debug Artifact Paths
         run: ls -R artifacts
 
+      - name: Read release body from markdown file
+        id: release-body
+        run: |
+          cat .github/release-body.md
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -125,10 +130,6 @@ jobs:
           tag_name: ${{ env.TAG_VERSION }}
           name: "Video Viewer ${{ env.version }}"
           body: |
-            ### Changes
-            - Built from ${{ github.sha }}
-            - Includes Linux and Windows binaries
-            - Version history in VERSION_LIST
-            - Added install.sh script for easy installation with sudo support
+            $(cat .github/release-body.md)
           files: |
             artifacts/video_viewer_command/video_viewer.tar.gz
