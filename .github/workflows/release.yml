@@ -121,7 +121,7 @@ jobs:
       - name: Set release body
         id: release-body
         run: |
-          RELEASE_BODY=$(cat .github/release-body.md | sed 's/$/\\n/' | tr -d '\n')
+          RELEASE_BODY=$(cat ./release-body.md | sed 's/$/\\n/' | tr -d '\n')
           echo "body=$RELEASE_BODY" >> $GITHUB_ENV
 
       - name: Create Release
