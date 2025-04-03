@@ -55,7 +55,6 @@ jobs:
           name: video_viewer_command
           path: video_viewer.tar.gz
 
-jobs:
   windows-libs:
     runs-on: windows-latest
 
