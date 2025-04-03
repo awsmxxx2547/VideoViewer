@@ -73,7 +73,7 @@ jobs:
         run: |
           mkdir -p libs
           gcc -v
-          mingw-w64-x86_64-gcc -o video_viewer.bin.exe src/*.c \
+          gcc -o video_viewer.bin.exe src/*.c \
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2
 
       - name: Gather DLL dependencies
