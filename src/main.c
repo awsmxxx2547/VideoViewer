@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     }
 
     if (argc < 2) {
-        printf("Usage: %s <video_file>\n", argv[0]);
+        printf("Usage: video_viewer <video_file>\n");
         return 1;
     }
 
