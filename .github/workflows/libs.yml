@@ -55,6 +55,7 @@ jobs:
           name: video_viewer_command
           path: video_viewer.tar.gz
 
+jobs:
   windows-libs:
     runs-on: windows-latest
 
@@ -74,8 +75,7 @@ jobs:
           mkdir -p libs
           gcc -o video_viewer.bin.exe src/*.c \
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
-          -static-libgcc
-
+          -static-libgcc -Wl,-rpath='$ORIGIN/libs'
 
       - name: Gather DLL dependencies
         shell: powershell
@@ -83,17 +83,17 @@ jobs:
           if (!(Test-Path -Path "libs")) {
               New-Item -ItemType Directory -Path "libs" | Out-Null
           }
-          
-          # Find all required DLLs
-          $dlls = (objdump -p video_viewer.bin.exe | Select-String -Pattern "DLL Name: .*\.dll" | ForEach-Object { $_.ToString().Split(":")[1].Trim() })
-          
+
+          # Find required DLLs
+          $dlls = (& "C:\msys64\mingw64\bin\ldd.exe" "video_viewer.bin.exe" | Select-String -Pattern "=> (.+?\.dll)" | ForEach-Object { ($_ -split "=> ")[1] -replace " \(.*\)", "" })
+
           $searchPaths = @(
-              "$env:MSYS2_PATH\mingw64\bin",
-              "$env:MSYS2_PATH\usr\bin",
-              "C:\tools\ffmpeg\bin",
-              "C:\tools\sdl2\lib\x64"
+              "C:\msys64\mingw64\bin",
+              "C:\msys64\usr\bin",
+              "C:\Program Files\ffmpeg\bin",
+              "C:\Program Files\SDL2\lib\x64"
           )
-          
+
           foreach ($dll in $dlls) {
               foreach ($path in $searchPaths) {
                   $dllPath = Join-Path -Path $path -ChildPath $dll
@@ -107,7 +107,7 @@ jobs:
       - name: Create Windows wrapper
         shell: powershell
         run: |
-          # Create a batch file that will be our main executable
+          # Create a batch file to launch with correct DLL paths
           @"
           @echo off
           setlocal
@@ -129,3 +129,4 @@ jobs:
         with:
           name: video_viewer_windows
           path: video_viewer_windows.zip
+
