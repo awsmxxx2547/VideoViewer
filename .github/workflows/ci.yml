@@ -13,31 +13,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev \
-          libswscale-dev libswresample-dev libsdl2-dev
+            libswscale-dev libswresample-dev libsdl2-dev
 
       - name: Build app (Linux)
-        run: |
-          make
-          mkdir -p artifacts
-          cp build/bin/video_viewer artifacts/
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: video-viewer-build
-          path: artifacts/
-          retention-days: 7
-
-      - name: Create release tarball
-        run: |
-          tar -czvf video_viewer_build.tar.gz -C artifacts .
-
-      - name: Upload release tarball
-        uses: actions/upload-artifact@v4
-        with:
-          name: video-viewer-tarball
-          path: video_viewer_build.tar.gz
-          retention-days: 7
+        run: make
 
   macos-build:
     runs-on: macos-latest
@@ -77,24 +56,3 @@ jobs:
         shell: msys2 {0}
         run: |
           mingw32-make all 
-          mkdir -p artifacts
-          cp build/bin/video_viewer.exe artifacts/
-
-      - name: Upload Windows binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: video-viewer-windows
-          path: artifacts/video_viewer.exe
-          retention-days: 7
-
-      - name: Create Windows release zip
-        shell: cmd
-        run: |
-          7z a video_viewer_windows.zip artifacts\video_viewer.exe
-
-      - name: Upload Windows zip package
-        uses: actions/upload-artifact@v4
-        with:
-          name: video-viewer-windows-zip
-          path: video_viewer_windows.zip
-          retention-days: 7
