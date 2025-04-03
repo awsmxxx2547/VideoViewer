@@ -1,0 +1,130 @@
+name: libs
+
+on: [ push ]
+
+jobs:
+  libs-build: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libavformat-dev libavcodec-dev libavutil-dev \
+          libswscale-dev libswresample-dev libsdl2-dev patchelf
+
+      - name: Build video_viewer
+        run: |
+          mkdir -p libs
+          gcc -o video_viewer.bin src/*.c \
+          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
+          -Wl,-rpath='$ORIGIN/libs'
+
+      - name: Bundle all required libraries
+        run: |
+          mkdir -p libs
+          ldd video_viewer.bin | awk '/=> \// {print $3}' | \
+          grep -vE "libc.so.6|libpthread.so.0|libm.so.6|libdl.so.2|ld-linux-x86-64.so.2" | \
+          xargs -I{} cp -v {} libs/
+          
+          patchelf --set-rpath '$ORIGIN/libs' video_viewer.bin
+          chmod +x libs/*
+
+      - name: Create portable command
+        run: |
+          # Create wrapper script that will be the main executable
+          echo '#!/bin/sh
+          SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+          export LD_LIBRARY_PATH="$SCRIPT_DIR/libs:$LD_LIBRARY_PATH"
+          exec "$SCRIPT_DIR/video_viewer.bin" "$@"' > video_viewer
+          
+          chmod +x video_viewer
+          
+          # Create directory structure
+          mkdir -p video_viewer_pkg
+          mv video_viewer video_viewer.bin libs video_viewer_pkg/
+          
+          # Create archive
+          tar czvf video_viewer.tar.gz video_viewer_pkg/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video_viewer_command
+          path: video_viewer.tar.gz
+
+  windows-libs:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-pkg-config mingw-w64-x86_64-ffmpeg
+          update: true
+
+      - name: Build video_viewer.bin.exe
+        shell: msys2 {0}
+        run: |
+          mkdir -p libs
+          gcc -v
+          gcc -o video_viewer.bin.exe src/*.c -Iinclude -mconsole -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2
+
+      - name: Gather DLL dependencies
+        shell: powershell
+        run: |
+          if (!(Test-Path -Path "libs")) {
+              New-Item -ItemType Directory -Path "libs" | Out-Null
+          }
+
+          # Find required DLLs
+          $dlls = (& "C:\msys64\mingw64\bin\ldd.exe" "video_viewer.bin.exe" | Select-String -Pattern "=> (.+?\.dll)" | ForEach-Object { ($_ -split "=> ")[1] -replace " \(.*\)", "" })
+
+          $searchPaths = @(
+              "C:\msys64\mingw64\bin",
+              "C:\msys64\usr\bin",
+              "C:\Program Files\ffmpeg\bin",
+              "C:\Program Files\SDL2\lib\x64"
+          )
+
+          foreach ($dll in $dlls) {
+              foreach ($path in $searchPaths) {
+                  $dllPath = Join-Path -Path $path -ChildPath $dll
+                  if (Test-Path -Path $dllPath) {
+                      Copy-Item -Path $dllPath -Destination "libs\" -Force
+                      break
+                  }
+              }
+          }
+
+      - name: Create Windows wrapper
+        shell: powershell
+        run: |
+          # Create a batch file to launch with correct DLL paths
+          @"
+          @echo off
+          setlocal
+          set SCRIPT_DIR=%~dp0
+          set PATH=%SCRIPT_DIR%libs;%PATH%
+          "%SCRIPT_DIR%video_viewer.bin.exe" %*
+          endlocal
+          "@ | Out-File -FilePath "video_viewer.cmd" -Encoding ASCII
+
+          # Create directory structure
+          New-Item -ItemType Directory -Path "video_viewer_pkg" | Out-Null
+          Move-Item -Path "video_viewer.bin.exe", "video_viewer.cmd", "libs" -Destination "video_viewer_pkg"
+
+          # Create archive
+          Compress-Archive -Path "video_viewer_pkg" -DestinationPath "video_viewer_windows.zip" -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video_viewer_windows
+          path: video_viewer_windows.zip
+
