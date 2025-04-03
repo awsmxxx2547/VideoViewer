@@ -20,18 +20,30 @@ jobs:
           mkdir -p libs
           gcc -o video_viewer src/*.c \
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
-          -Wl,-rpath=\./libs
+          -Wl,-rpath='$ORIGIN/libs'
 
-
-      - name: Create libs directory and copy shared libraries
+      - name: Copy and fix library dependencies
         run: |
-          ldd video_viewer | awk '{print $3}' | grep "/lib" | xargs -I{} cp {} libs/
-          sudo rm -rf libc.so.6
+          # Get all dependencies and copy to libs folder
+          ldd video_viewer | awk '/=> \// {print $3}' | grep -v "libc.so.6" | grep -v "ld-linux-" | xargs -I{} cp {} libs/
+
+          # Use patchelf to set the correct rpath
+          patchelf --set-rpath '$ORIGIN/libs' video_viewer
+
+          # Optional: Make all copied libraries executable
+          chmod +x libs/*
+
+      - name: Verify library paths
+        run: |
+          ldd video_viewer
+          readelf -d video_viewer | grep RPATH
+
+      - name: Create archive for better portability
+        run: |
+          tar czvf video_viewer_bundle.tar.gz video_viewer libs/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: video_viewer_with_libs
-          path: |
-            video_viewer
-            libs/
+          path: video_viewer_bundle.tar.gz
