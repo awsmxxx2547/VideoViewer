@@ -73,8 +73,8 @@ jobs:
         run: |
           mkdir -p libs
           gcc -o video_viewer.bin.exe src/*.c \
-          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
-          -Wl,-rpath=./libs
+          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 -lmingw32 -Wl
+
 
       - name: Gather DLL dependencies
         shell: powershell
