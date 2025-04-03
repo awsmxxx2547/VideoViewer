@@ -1,0 +1,42 @@
+name: Coverage Report
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'  # This runs the workflow every day at midnight UTC
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up GCC and dependencies
+      - name: Set up GCC
+        run: |
+          sudo apt update
+          sudo apt install -y gcc g++ make pkg-config libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev gcovr
+
+      # Install dependencies (if any specific ones are required)
+      - name: Install dependencies
+        run: |
+          # Add your dependencies installation commands here
+          # Example: make install
+
+      # Build the project
+      - name: Build the project
+        run: make all
+
+      # Run the tests and generate coverage report
+      - name: Run tests and generate coverage report
+        run: make t-coverage
+
+      # Upload the coverage report to GitHub
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v2
+        with:
+          file: coverage_reports/coverage_report.html

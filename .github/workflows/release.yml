@@ -1,0 +1,135 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags (v1.0.0, etc.)
+
+jobs:
+  linux-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libavformat-dev libavcodec-dev libavutil-dev \
+          libswscale-dev libswresample-dev libsdl2-dev patchelf
+
+      - name: Build video_viewer
+        run: |
+          mkdir -p libs
+          gcc -o video_viewer.bin src/*.c \
+          -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
+          -Wl,-rpath='$ORIGIN/libs'
+
+      - name: Bundle all required libraries
+        run: |
+          mkdir -p libs
+          ldd video_viewer.bin | awk '/=> \// {print $3}' | \
+          grep -vE "libc.so.6|libpthread.so.0|libm.so.6|libdl.so.2|ld-linux-x86-64.so.2" | \
+          xargs -I{} cp -v {} libs/
+
+          patchelf --set-rpath '$ORIGIN/libs' video_viewer.bin
+          chmod +x libs/*
+
+      - name: Create portable command
+        run: |
+          # Create wrapper script that will be the main executable
+          echo '#!/bin/sh
+          SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+          export LD_LIBRARY_PATH="$SCRIPT_DIR/libs:$LD_LIBRARY_PATH"
+          exec "$SCRIPT_DIR/video_viewer.bin" "$@"' > video_viewer
+
+          chmod +x video_viewer
+
+          # Create install script
+          echo '#!/bin/sh
+          # Default installation directory
+          INSTALL_DIR="/usr/local/bin"
+          
+          # Check if sudo is available
+          if command -v sudo &>/dev/null; then
+              SUDO="sudo"
+          else
+              SUDO=""
+          fi
+          
+          # Check if directory is writable
+          if [ ! -w "$INSTALL_DIR" ]; then
+              if [ -n "$SUDO" ]; then
+                  echo "Using sudo to install in $INSTALL_DIR"
+              else
+                  echo "No permission to install in $INSTALL_DIR and sudo not available"
+                  echo "Trying user local bin directory instead..."
+                  INSTALL_DIR="$HOME/.local/bin"
+                  mkdir -p "$INSTALL_DIR"
+              fi
+          fi
+          
+          # Copy files
+          echo "Installing to $INSTALL_DIR..."
+          $SUDO cp -v video_viewer "$INSTALL_DIR/"
+          $SUDO cp -rv libs "$INSTALL_DIR/"
+          $SUDO cp -v video_viewer.bin "$INSTALL_DIR/"
+          
+          # Set permissions
+          $SUDO chmod 755 "$INSTALL_DIR/video_viewer"
+          $SUDO chmod 755 "$INSTALL_DIR/video_viewer.bin"
+          $SUDO chmod -R 755 "$INSTALL_DIR/libs"
+          
+          echo "Installation complete!"
+          echo "You can now run video_viewer from anywhere"' > install.sh
+
+          chmod +x install.sh
+
+          # Create directory structure
+          mkdir -p video_viewer_pkg
+          mv video_viewer video_viewer.bin libs install.sh video_viewer_pkg/
+
+          # Create archive
+          tar czvf video_viewer.tar.gz video_viewer_pkg/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video_viewer_command
+          path: video_viewer.tar.gz
+          
+  create-release:
+    needs: [linux-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Get version
+        id: version
+        run: |
+          echo "TAG_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Debug Artifact Paths
+        run: ls -R artifacts
+
+      - name: Set release body
+        id: release-body
+        run: |
+          RELEASE_BODY=$(cat .github/release-body.md | sed 's/$/\\n/' | tr -d '\n')
+          echo "body=$RELEASE_BODY" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.TAG_VERSION }}
+          name: "Video Viewer ${{ env.version }}"
+          body: ${{ env.body }}
+          files: |
+            artifacts/video_viewer_command/video_viewer.tar.gz
