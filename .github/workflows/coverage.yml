@@ -1,8 +1,9 @@
 name: Coverage Report
 
 on:
-  branches:
-    - master
+  push:
+    branches:
+      - master
   schedule:
     - cron: '0 0 * * *'  # This runs the workflow every day at midnight UTC
 
