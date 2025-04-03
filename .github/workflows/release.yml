@@ -1,0 +1,107 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags (v1.0.0, etc.)
+
+jobs:
+  linux-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev \
+            libswscale-dev libswresample-dev libsdl2-dev
+
+      - name: Build
+        run: |
+          make
+          mkdir -p release/linux
+          cp build/bin/video_viewer release/linux/
+          cp -r include release/linux/
+          cp VERSION_LIST release/linux/
+          cp README.md release/linux/
+          cp install.sh release/linux/
+
+      - name: Package Linux release
+        run: |
+          tar -czvf video_viewer_linux.tar.gz -C release/linux .
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-viewer-linux
+          path: video_viewer_linux.tar.gz
+
+  windows-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: >-
+            mingw-w64-x86_64-make 
+            mingw-w64-x86_64-gcc 
+            mingw-w64-x86_64-SDL2 
+            mingw-w64-x86_64-pkg-config 
+            mingw-w64-x86_64-ffmpeg
+          update: true
+
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          mingw32-make all
+          mkdir -p release/windows
+          cp build/bin/video_viewer.exe release/windows/
+          cp -r include release/windows/
+          cp VERSION_LIST release/windows/
+          cp README.md release/windows/
+
+      - name: Package Windows release
+        shell: cmd
+        run: |
+          7z a video_viewer_windows.zip release\windows\*
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-viewer-windows
+          path: video_viewer_windows.zip
+
+  create-release:
+    needs: [linux-release, windows-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Get version
+        id: version
+        run: |
+          echo "TAG_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_VERSION }}
+          name: "Video Viewer ${{ env.version }}"
+          body: |
+            ### Changes
+            - Built from ${{ github.sha }}
+            - Includes Linux and Windows binaries
+            - Version history in VERSION_LIST
+          files: |
+            artifacts/video-viewer-linux/video_viewer_linux.tar.gz
+            artifacts/video-viewer-windows/video_viewer_windows.zip
