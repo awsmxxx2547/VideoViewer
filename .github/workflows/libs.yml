@@ -17,14 +17,16 @@ jobs:
 
       - name: Build video_viewer
         run: |
+          mkdir -p libs
           gcc -o video_viewer src/*.c \
           -lavformat -lavcodec -lavutil -lswscale -lswresample -lSDL2 \
-          -Wl,-rpath=\$ORIGIN/libs
+          -Wl,-rpath=\./libs
+
 
       - name: Create libs directory and copy shared libraries
         run: |
-          mkdir -p libs
           ldd video_viewer | awk '{print $3}' | grep "/lib" | xargs -I{} cp {} libs/
+          sudo rm -rf libc.so.6
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
