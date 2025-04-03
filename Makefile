@@ -170,3 +170,19 @@ current-version:
 	else \
 		echo "VERSION file not found. Run 'make version' to create it."; \
 	fi
+
+
+# ========================
+# Copy Shared Libraries
+# ========================
+LIBS_DIR := libs
+
+copy-libs: $(TARGET)
+	@echo "🔍 Looking for dependencies..."
+	@mkdir -p $(LIBS_DIR)
+	@ldd $(TARGET) | awk '{print $$3}' | grep '^/' | xargs -I{} cp -v {} $(LIBS_DIR) || true
+	@echo "✅ Libraries were copied to $(LIBS_DIR)/"
+
+run: copy-libs
+	@echo "🚀 Running app..."
+	@LD_LIBRARY_PATH=$(LIBS_DIR) ./$(TARGET)

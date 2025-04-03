@@ -21,4 +21,4 @@ install_dependencies() {
     echo -e "Installation complete!!!"
     }
 
-install_dependencies()
+install_dependencies
